@@ -12,3 +12,13 @@ I hope modders can make use of this source code for future modiications to come.
 Thanks, and happy holidays to you all,
 
 Bitl.
+
+Credits:
+------------
+R_Yell/Fistful of Frags team - Basic bot AI code.
+RaraCerbFolf - Creating the 2-handed AR2 model and modifyng it to work with SURVIVOR, along with some viewmodel fixes.
+Biohazard_90 - Creator of the Source Shader Editor along with the Sunrays shader.
+sparrowstar - Depth of Field shader, as well as helping me implement the shaders.
+TF2 Classic team - Weapon ID functions and weapon randomizer function.
+Taito - Creators of Half-Life 2 Survivor Ver2.0.
+Valve - Creators of the Source Engine and Half-Life 2.
