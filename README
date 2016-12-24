@@ -1,0 +1,14 @@
+Bitl's SURVIVOR Mod
+====================
+
+SURVIVOR was a mod for Half-Life 2 that takes Half-Life 2 Survivor Ver2.0 and recreates it from scratch inside of the Source SDK 2013 engine.
+It was first a remake of the Battle Mode, but then it was planned to also include a Mission Mode as well.
+It also was supposed to be a graphical improvement over the original Half-Life 2 Survivor Ver2.0, with enhancements like SSAO and Sunrays.
+This is the most recent source code branch as of 12-24-16. This includes the Shader Editor and SDK 2013 branches used for SURVIVOR.
+
+It was hard for me to do this, but I felt like releasing it because I lost interest in the project and I was focusing on FIREFIGHT RELOADED, SMOD3, and others.
+I hope modders can make use of this source code for future modiications to come.
+
+Thanks, and happy holidays to you all,
+
+Bitl.
