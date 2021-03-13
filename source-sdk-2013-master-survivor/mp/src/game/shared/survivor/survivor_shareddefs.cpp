@@ -48,7 +48,7 @@ const char *g_aFactionNames[] =
 int GetWeaponId( const char *pszWeaponName )
 {
 	// if this doesn't match, you need to add missing weapons to the array
-	assert( ARRAYSIZE( g_aWeaponNames ) == ( SURVIVOR_WEAPON_COUNT + 1 ) );
+	assert( ARRAYSIZE( g_aWeaponNames ) == (WEAPON_COUNT + 1 ) );
 
 	for ( int iWeapon = 0; iWeapon < ARRAYSIZE( g_aWeaponNames ); ++iWeapon )
 	{
@@ -66,7 +66,7 @@ int GetWeaponId( const char *pszWeaponName )
 const char *WeaponIdToAlias( int iWeapon )
 {
 	// if this doesn't match, you need to add missing weapons to the array
-	assert( ARRAYSIZE( g_aWeaponNames ) == ( SURVIVOR_WEAPON_COUNT + 1 ) );
+	assert( ARRAYSIZE( g_aWeaponNames ) == (WEAPON_COUNT + 1 ) );
 
 	if ( ( iWeapon >= ARRAYSIZE( g_aWeaponNames ) ) || ( iWeapon < 0 ) )
 		return NULL;

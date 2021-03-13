@@ -29,17 +29,11 @@
 #endif
 
 #if !defined( CLIENT_DLL )
-
 // Game DLL Headers
 #include "soundent.h"
 #include "eventqueue.h"
 #include "fmtstr.h"
 #include "gameweaponmanager.h"
-
-#ifdef HL2MP
-	#include "hl2mp_gamerules.h"
-#endif
-
 #endif
 
 #include "vprof.h"

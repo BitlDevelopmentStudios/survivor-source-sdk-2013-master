@@ -1992,7 +1992,7 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 		CSkyboxView *pSkyView = new CSkyboxView( this );
 		if ( ( bDrew3dSkybox = pSkyView->Setup( view, &nClearFlags, &nSkyboxVisible ) ) != false )
 		{
-			g_ShaderEditorSystem->UpdateSkymask(view.x, view.y, view.width, view.height);
+			g_ShaderEditorSystem->UpdateSkymask(false, view.x, view.y, view.width, view.height);
 			AddViewToScene( pSkyView );
 		}
 		SafeRelease( pSkyView );
