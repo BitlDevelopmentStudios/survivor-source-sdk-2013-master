@@ -618,9 +618,7 @@ void CParticleProperty::UpdateControlPoint( ParticleEffectList_t *pEffect, int i
 						if ( !pAnimating->C_BaseAnimating::GetAttachment( pPoint->iAttachmentPoint, attachmentToWorld ) )
 						{
 							Warning( "Cannot update control point %d for effect '%s'.\n", pPoint->iAttachmentPoint, pEffect->pParticleEffect->GetEffectName() );
-							// Remove the effect cause this warning means something is orphaned
-							StopParticlesNamed( pEffect->pParticleEffect->GetEffectName() );
-							return;
+							attachmentToWorld = pAnimating->RenderableToWorldTransform();
 						}
 					}
 
@@ -629,7 +627,7 @@ void CParticleProperty::UpdateControlPoint( ParticleEffectList_t *pEffect, int i
 					MatrixVectors( vMat.As3x4(), &vecForward, &vecRight, &vecUp );
 					MatrixPosition( vMat.As3x4(), vecOrigin );
 
-					if ( pEffect->pParticleEffect->GetIsViewModelEffect() )
+					if ( pEffect->pParticleEffect->m_pDef->IsViewModelEffect() )
 					{
 						FormatViewModelAttachment( vecOrigin, true );
 					}

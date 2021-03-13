@@ -631,6 +631,7 @@ private:
 	bool	m_wroteCollisionGroup;
 };
 
+
 void BuildPropList(const char *pszBlockName, CUtlVector<breakmodel_t> &list, int modelindex, float defBurstScale, int defCollisionGroup)
 {
 	vcollide_t *pCollide = modelinfo->GetVCollide(modelindex);

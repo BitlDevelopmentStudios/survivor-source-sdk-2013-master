@@ -591,8 +591,6 @@ CBasePlayer::CBasePlayer( )
 	m_bForceOrigin = false;
 	m_hVehicle = NULL;
 	m_pCurrentCommand = NULL;
-	m_iLockViewanglesTickNumber = 0;
-	m_qangLockViewangles.Init();
 	
 	// Setup our default FOV
 	m_iDefaultFOV = g_pGameRules->DefaultFOV();
@@ -2397,7 +2395,6 @@ bool CBasePlayer::SetObserverMode(int mode )
 			break;
 
 		case OBS_MODE_CHASE :
-		case OBS_MODE_POI: // PASSTIME
 		case OBS_MODE_IN_EYE :	
 			// udpate FOV and viewmodels
 			SetObserverTarget( m_hObserverTarget );	
@@ -2493,7 +2490,8 @@ void CBasePlayer::CheckObserverSettings()
 	}
 
 	// check if our spectating target is still a valid one
-	if (  m_iObserverMode == OBS_MODE_IN_EYE || m_iObserverMode == OBS_MODE_CHASE || m_iObserverMode == OBS_MODE_FIXED || m_iObserverMode == OBS_MODE_POI )
+	
+	if (  m_iObserverMode == OBS_MODE_IN_EYE || m_iObserverMode == OBS_MODE_CHASE || m_iObserverMode == OBS_MODE_FIXED )
 	{
 		ValidateCurrentObserverTarget();
 				
@@ -2547,7 +2545,6 @@ void CBasePlayer::ValidateCurrentObserverTarget( void )
 		}
 		else
 		{
-#if !defined( TF_DLL )
 			// couldn't find new target, switch to temporary mode
 			if ( mp_forcecamera.GetInt() == OBS_ALLOW_ALL )
 			{
@@ -2555,11 +2552,10 @@ void CBasePlayer::ValidateCurrentObserverTarget( void )
 				ForceObserverMode( OBS_MODE_ROAMING );
 			}
 			else
-#endif
 			{
 				// fix player view right where it is
 				ForceObserverMode( OBS_MODE_FIXED );
-				m_hObserverTarget.Set( NULL ); // no target to follow
+				m_hObserverTarget.Set( NULL ); // no traget to follow
 			}
 		}
 	}
@@ -2705,10 +2701,7 @@ bool CBasePlayer::SetObserverTarget(CBaseEntity *target)
 		Vector	dir, end;
 		Vector	start = target->EyePosition();
 		
-		QAngle ang = target->EyeAngles();
-		ang.z = 0; // PASSTIME no view roll when spectating ball
-
-		AngleVectors( ang, &dir );
+		AngleVectors( target->EyeAngles(), &dir );
 		VectorNormalize( dir );
 		VectorMA( start, -64.0f, dir, end );
 
@@ -2718,7 +2711,7 @@ bool CBasePlayer::SetObserverTarget(CBaseEntity *target)
 		trace_t	tr;
 		UTIL_TraceRay( ray, MASK_PLAYERSOLID, target, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
 
-		JumptoPosition( tr.endpos, ang );
+		JumptoPosition( tr.endpos, target->EyeAngles() );
 	}
 	
 	return true;
@@ -3509,16 +3502,6 @@ void CBasePlayer::ProcessUsercmds( CUserCmd *cmds, int numcmds, int totalcmds,
 		if ( !IsUserCmdDataValid( pCmd ) )
 		{
 			pCmd->MakeInert();
-		}
-
-		if ( sv_usercmd_custom_random_seed.GetBool() )
-		{
-			float fltTimeNow = float( Plat_FloatTime() * 1000.0 );
-			pCmd->server_random_seed = *reinterpret_cast<int*>( (char*)&fltTimeNow );
-		}
-		else
-		{
-			pCmd->server_random_seed = pCmd->random_seed;
 		}
 
 		ctx->cmds.AddToTail( *pCmd );
@@ -7479,7 +7462,7 @@ void CBasePlayer::EquipWearable( CEconWearable *pItem )
 		pItem->Equip( this );
 	}
 
-#ifdef DBGFLAG_ASSERT
+#ifdef DEBUG
 	// Double check list integrity.
 	for ( int i = m_hMyWearables.Count()-1; i >= 0; --i )
 	{
@@ -7518,7 +7501,7 @@ void CBasePlayer::RemoveWearable( CEconWearable *pItem )
 		}
 	}
 
-#ifdef DBGFLAG_ASSERT
+#ifdef DEBUG
 	// Double check list integrity.
 	for ( int i = m_hMyWearables.Count()-1; i >= 0; --i )
 	{
@@ -7971,7 +7954,7 @@ void CMovementSpeedMod::InputSpeedMod(inputdata_t &data)
 			// Bring the weapon back
 			if  ( HasSpawnFlags( SF_SPEED_MOD_SUPPRESS_WEAPONS ) && pPlayer->GetActiveWeapon() == NULL )
 			{
-				pPlayer->SetActiveWeapon( pPlayer->GetLastWeapon() );
+				pPlayer->SetActiveWeapon( pPlayer->Weapon_GetLast() );
 				if ( pPlayer->GetActiveWeapon() )
 				{
 					pPlayer->GetActiveWeapon()->Deploy();
@@ -8953,6 +8936,8 @@ void CBasePlayer::SetPlayerName( const char *name )
 		Assert( strlen(name) > 0 );
 
 		Q_strncpy( m_szNetname, name, sizeof(m_szNetname) );
+		// Be extra thorough
+		Q_RemoveAllEvilCharacters(m_szNetname);
 	}
 }
 
@@ -9046,7 +9031,6 @@ void CBasePlayer::HandleAnimEvent( animevent_t *pEvent )
 
 	BaseClass::HandleAnimEvent( pEvent );
 }
-
 
 //-----------------------------------------------------------------------------
 // Purpose: 

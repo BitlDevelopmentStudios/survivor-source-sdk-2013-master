@@ -418,8 +418,6 @@ public:
 
 	virtual bool IsHolidayActive( /*EHoliday*/ int eHoliday) const { return false; }
 
-	virtual bool IsManualMapChangeOkay( const char **pszReason ){ return true; }
-
 #ifndef CLIENT_DLL
 private:
 	float m_flNextVerboseLogOutput;

@@ -91,7 +91,8 @@ void CFuncNavCost::Spawn( void )
 	// chop space-delimited string into individual tokens
 	if ( tags )
 	{
-		char *buffer = V_strdup ( tags );
+		char *buffer = new char [ strlen( tags ) + 1 ];
+		Q_strcpy( buffer, tags );
 
 		for( char *token = strtok( buffer, " " ); token; token = strtok( NULL, " " ) )
 		{
