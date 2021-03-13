@@ -1,1 +1,1 @@
-devtools\bin\vpc.exe /hl2mp +everything /mksln everything.sln
+devtools\bin\vpc.exe /survivor +everything /mksln everything_survivor.sln

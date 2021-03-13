@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 
 // Specify source root of your game.
-$Macro TARGET_SRC_DIRECTORY "C:\Users\BITL\Documents\source-sdk-2013-master2\source-sdk-2013-master-survivor\mp\src" // example: C:\sourcesdk2013\sp\src
+$Macro TARGET_SRC_DIRECTORY "G:\Projects\GitHub\survivor-source-sdk-2013-master\source-sdk-2013-master-survivor\mp\src" // example: C:\sourcesdk2013\sp\src
 
 // Specify target SDK version. Only enable one of them.
 $Conditional "TARGET_PLATFORM_2013" 1
@@ -19,7 +19,7 @@ $Conditional "TARGET_PLATFORM_2006" 0
 $Conditional "TARGET_PLATFORM_PORTAL2" 0
 
 // Specify game root.
-$Macro TARGET_GAME_DIRECTORY "C:\Program Files (x86)\Steam\SteamApps\sourcemods\survivor" // example: C:\Steam\steamapps\sourcemods\mygame
+$Macro TARGET_GAME_DIRECTORY "G:\Projects\GitHub\survivor-source-sdk-2013-master\source-sdk-2013-master-survivor\mp\src\game\survivor" // example: C:\Steam\steamapps\sourcemods\mygame
 
 
 // Toggled through macro above, do not touch.
