@@ -59,7 +59,7 @@ void DBG_AssertFunction( bool fExpr, const char *szExpr, const char *szFile, int
 		Q_snprintf(szOut,sizeof(szOut), "ASSERT FAILED:\n %s \n(%s@%d)\n%s", szExpr, szFile, szLine, szMessage);
 	else
 		Q_snprintf(szOut,sizeof(szOut), "ASSERT FAILED:\n %s \n(%s@%d)\n", szExpr, szFile, szLine);
-	Warning( szOut);
+	Warning( "%s", szOut);
 }
 #endif	// DEBUG
 
@@ -161,6 +161,11 @@ IServerNetworkable *CEntityFactoryDictionary::Create( const char *pClassName )
 	IEntityFactory *pFactory = FindFactory( pClassName );
 	if ( !pFactory )
 	{
+#ifdef STAGING_ONLY
+		static ConVarRef tf_bot_use_items( "tf_bot_use_items" );
+		if ( tf_bot_use_items.IsValid() && tf_bot_use_items.GetInt() )
+			return NULL;
+#endif
 		Warning("Attempted to create unknown entity type %s!\n", pClassName );
 		return NULL;
 	}
@@ -566,6 +571,24 @@ CBasePlayer	*UTIL_PlayerByIndex( int playerIndex )
 	}
 	
 	return pPlayer;
+}
+
+CBasePlayer *UTIL_PlayerBySteamID( const CSteamID &steamID )
+{
+	CSteamID steamIDPlayer;
+	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	{
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
+		if ( !pPlayer )
+			continue;
+
+		if ( !pPlayer->GetSteamID( &steamIDPlayer ) )
+			continue;
+
+		if ( steamIDPlayer == steamID )
+			return pPlayer;
+	}
+	return NULL;
 }
 
 CBasePlayer* UTIL_PlayerByName( const char *name )
@@ -2041,8 +2064,56 @@ void UTIL_ValidateSoundName( string_t &name, const char *defaultStr )
 // Input  : token - Returns with a token, or zero length if the token was missing.
 //			str - String to parse.
 //			sep - Character to use as separator. UNDONE: allow multiple separator chars
+//          tokenLen - Length of token buffer
 // Output : Returns a pointer to the next token to be parsed.
 //-----------------------------------------------------------------------------
+#ifdef SDK2013CE
+const char *nexttoken(char *token, const char *str, char sep, size_t tokenLen)
+{
+	if ((str == NULL) || (*str == '\0'))
+	{
+		if (tokenLen)
+		{
+			*token = '\0';
+		}
+		return(NULL);
+	}
+
+	//
+	// Copy everything up to the first separator into the return buffer.
+	// Do not include separators in the return buffer.
+	//
+	while ((*str != sep) && (*str != '\0') && (tokenLen > 1))
+	{
+		*token++ = *str++;
+		tokenLen--;
+	}
+	
+	//
+	// If token is to big for return buffer, skip rest of token.
+	//
+	while ((*str != sep) && (*str != '\0'))
+	{
+		str++;
+	}
+	
+	if (tokenLen)
+	{
+		*token = '\0';
+		tokenLen--;
+	}
+
+	//
+	// Advance the pointer unless we hit the end of the input string.
+	//
+	if (*str == '\0')
+	{
+		return(str);
+	}
+
+	return(++str);
+}
+#else
 const char *nexttoken(char *token, const char *str, char sep)
 {
 	if ((str == NULL) || (*str == '\0'))
@@ -2071,6 +2142,7 @@ const char *nexttoken(char *token, const char *str, char sep)
 
 	return(++str);
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Helper for UTIL_FindClientInPVS

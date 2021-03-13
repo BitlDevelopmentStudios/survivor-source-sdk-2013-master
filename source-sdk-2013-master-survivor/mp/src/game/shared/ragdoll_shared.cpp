@@ -40,7 +40,7 @@ void CRagdollLowViolenceManager::SetLowViolence( const char *pMapName )
 
 #if !defined( CLIENT_DLL )
 	// the server doesn't worry about low violence during multiplayer games
-	if ( g_pGameRules->IsMultiplayer() )
+	if ( g_pGameRules && g_pGameRules->IsMultiplayer() )
 	{
 		m_bLowViolence = false;
 	}
@@ -90,9 +90,17 @@ public:
 			if ( m_bSelfCollisions )
 			{
 				char szToken[256];
+			#ifdef SDK2013CE
+				const char *pStr = nexttoken(szToken, pValue, ',', sizeof(szToken));
+			#else
 				const char *pStr = nexttoken(szToken, pValue, ',');
+			#endif
 				int index0 = atoi(szToken);
+			#ifdef SDK2013CE
+				nexttoken( szToken, pStr, ',', sizeof(szToken) );
+			#else
 				nexttoken( szToken, pStr, ',' );
+			#endif
 				int index1 = atoi(szToken);
 
 				m_pSet->EnableCollisions( index0, index1 );
@@ -741,6 +749,10 @@ bool ShouldRemoveThisRagdoll( CBaseAnimating *pRagdoll )
 	if ( pRagdoll->GetEffectEntity() )
 		return false;
 	*/
+
+	// Bail if we have a null ragdoll pointer.
+	if ( !pRagdoll->m_pRagdoll )
+		return true;
 
 	Vector vMins, vMaxs;
 		
