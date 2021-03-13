@@ -288,7 +288,7 @@ int CalcShaderIndex( CBaseVSShader *pShader, IShaderShadow* pShaderShadow, IShad
 #ifndef SHADER_EDITOR_DLL_2006
 		case HLSLCOMBO_LIGHT_STATIC:
 			Assert( pShaderAPI );
-			localCombo = lState.m_bStaticLight ? 1 : 0;
+			localCombo = lState.m_bStaticLightVertex ? 1 : 0;
 			break;
 		case HLSLCOMBO_LIGHT_DYNAMIC:
 			Assert( pShaderAPI );
