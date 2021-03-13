@@ -178,7 +178,6 @@ $Project "Vbsp"
 		$Lib mathlib
 		$Lib tier2
 		$Lib vtf
-		$Lib "$LIBCOMMON/lzma"
 	}
 
 	$File	"notes.txt"

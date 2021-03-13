@@ -66,8 +66,6 @@ int			g_nDXLevel = 0; // default dxlevel if you don't specify it on the command-
 CUtlVector<int> g_SkyAreas;
 char		outbase[32];
 
-char		g_szEmbedDir[MAX_PATH] = { 0 };
-
 // HLTOOLS: Introduce these calcs to make the block algorithm proportional to the proper 
 // world coordinate extents.  Assumes square spatial constraints.
 #define BLOCKS_SIZE		1024
@@ -898,12 +896,6 @@ int RunVBSP( int argc, char **argv )
 	Q_FileBase( source, mapbase, sizeof( mapbase ) );
 	strlwr( mapbase );
 
-	// Maintaining legacy behavior here to avoid breaking tools: regardless of the extension we are passed, we strip it
-	// to get the "source" name, and append extensions as desired...
-	char		mapFile[1024];
-	V_strncpy( mapFile, source, sizeof( mapFile ) );
-	V_strncat( mapFile, ".bsp", sizeof( mapFile ) );
-
 	LoadCmdLineFromFile( argc, argv, mapbase, "vbsp" );
 
 	Msg( "Valve Software - vbsp.exe (%s)\n", __DATE__ );
@@ -1103,7 +1095,7 @@ int RunVBSP( int argc, char **argv )
 		{
 			// nothing to do here, but don't bail on this option
 		}
-		else if ( !Q_stricmp( argv[i], "-vproject" ) || !Q_stricmp( argv[i], "-game" ) || !Q_stricmp( argv[i], "-insert_search_path" ) )
+		else if ( !Q_stricmp( argv[i], "-vproject" ) || !Q_stricmp( argv[i], "-game" ) )
 		{
 			++i;
 		}
@@ -1136,19 +1128,6 @@ int RunVBSP( int argc, char **argv )
 		else if ( !Q_stricmp( argv[i], "-FullMinidumps" ) )
 		{
 			EnableFullMinidumps( true );
-		}
-		else if ( !Q_stricmp( argv[i], "-embed" ) && i < argc - 1 )
-		{
-			V_MakeAbsolutePath( g_szEmbedDir, sizeof( g_szEmbedDir ), argv[++i], "." );
-			V_FixSlashes( g_szEmbedDir );
-			if ( !V_RemoveDotSlashes( g_szEmbedDir ) )
-			{
-				Error( "Bad -embed - Can't resolve pathname for '%s'", g_szEmbedDir );
-				break;
-			}
-			V_StripTrailingSlash( g_szEmbedDir );
-			g_pFullFileSystem->AddSearchPath( g_szEmbedDir, "GAME", PATH_ADD_TO_TAIL );
-			g_pFullFileSystem->AddSearchPath( g_szEmbedDir, "MOD", PATH_ADD_TO_TAIL );
 		}
 		else if (argv[i][0] == '-')
 		{
@@ -1183,9 +1162,6 @@ int RunVBSP( int argc, char **argv )
 			"                what affects visibility.\n"
 			"  -nowater    : Get rid of water brushes.\n"
 			"  -low        : Run as an idle-priority process.\n"
-			"  -embed <directory>  : Use <directory> as an additional search path for assets\n"
-			"                        and embed all assets in this directory into the compiled\n"
-			"                        map\n"
 			"\n"
 			"  -vproject <directory> : Override the VPROJECT environment variable.\n"
 			"  -game <directory>     : Same as -vproject.\n"
@@ -1239,17 +1215,6 @@ int RunVBSP( int argc, char **argv )
 				);
 			}
 
-		DeleteCmdLine( argc, argv );
-		CmdLib_Cleanup();
-		CmdLib_Exit( 1 );
-	}
-
-	// Sanity check
-	if ( *g_szEmbedDir && ( onlyents || onlyprops ) )
-	{
-		Warning( "-embed only makes sense alongside full BSP compiles.\n"
-		         "\n"
-		         "Use the bspzip utility to update embedded files.\n" );
 		DeleteCmdLine( argc, argv );
 		CmdLib_Cleanup();
 		CmdLib_Exit( 1 );
@@ -1315,6 +1280,9 @@ int RunVBSP( int argc, char **argv )
 		}
 	}
 
+	char platformBSPFileName[1024];
+	GetPlatformMapPath( source, platformBSPFileName, g_nDXLevel, 1024 );
+	
 	// if we're combining materials, load the script file
 	if ( g_ReplaceMaterials )
 	{
@@ -1326,7 +1294,7 @@ int RunVBSP( int argc, char **argv )
 	//
 	if (onlyents)
 	{
-		LoadBSPFile (mapFile);
+		LoadBSPFile (platformBSPFileName);
 		num_entities = 0;
 		// Clear out the cubemap samples since they will be reparsed even with -onlyents
 		g_nCubemapSamples = 0;
@@ -1358,12 +1326,12 @@ int RunVBSP( int argc, char **argv )
 		// Doing this here because stuff abov may filter out entities
 		UnparseEntities ();
 
-		WriteBSPFile (mapFile);
+		WriteBSPFile (platformBSPFileName);
 	}
 	else if (onlyprops)
 	{
 		// In the only props case, deal with static + detail props only
-		LoadBSPFile (mapFile);
+		LoadBSPFile (platformBSPFileName);
 
 		LoadMapFile(name);
 		SetModelNumbers();
@@ -1376,7 +1344,7 @@ int RunVBSP( int argc, char **argv )
 		LoadEmitDetailObjectDictionary( gamedir );
 		EmitDetailObjects();
 
-		WriteBSPFile (mapFile);
+		WriteBSPFile (platformBSPFileName);
 	}
 	else
 	{
@@ -1385,9 +1353,9 @@ int RunVBSP( int argc, char **argv )
 		//
 
 		// Load just the file system from the bsp
-		if( g_bKeepStaleZip && FileExists( mapFile ) )
+		if( g_bKeepStaleZip && FileExists( platformBSPFileName ) )
 		{
-			LoadBSPFile_FileSystemOnly (mapFile);
+			LoadBSPFile_FileSystemOnly (platformBSPFileName);
 			// Mark as stale since the lighting could be screwed with new ents.
 			AddBufferToPak( GetPakFile(), "stale.txt", "stale", strlen( "stale" ) + 1, false );
 		}
@@ -1404,13 +1372,6 @@ int RunVBSP( int argc, char **argv )
 		SetLightStyles ();
 		LoadEmitDetailObjectDictionary( gamedir );
 		ProcessModels ();
-
-		// Add embed dir if provided
-		if ( *g_szEmbedDir )
-		{
-			AddDirToPak( GetPakFile(), g_szEmbedDir );
-			WriteBSPFile( mapFile );
-		}
 	}
 
 	end = Plat_FloatTime();

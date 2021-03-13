@@ -15,7 +15,7 @@ $Configuration
 	$Compiler
 	{
 		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\hl2,.\hl2,.\hl2mp,$SRCDIR\game\shared\hl2mp.\survivor,$SRCDIR\game\shared\survivor"
-		$PreprocessorDefinitions		"$BASE;HL2MP;HL2_DLL;SOURCE_2013;SURVIVOR_DLL;SURVIVOR_SERVER_DLL;SDK2013CE"
+		$PreprocessorDefinitions		"$BASE;HL2MP;HL2_DLL;SOURCE_2013;SURVIVOR_DLL;SURVIVOR_SERVER_DLL"
 	}
 }
 

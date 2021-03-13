@@ -9,18 +9,6 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
-#if defined(__x86_64__) || defined(_WIN64)
-#define PLATFORM_64BITS 1
-#endif
-
-#if defined(__GCC__) || defined(__GNUC__)
-#define COMPILER_GCC 1
-#endif
-
-#ifdef __clang__
-#define COMPILER_CLANG 1
-#endif
-
 #if defined( _X360 )
 	#define NO_STEAM
 	#define NO_VOICE
@@ -69,6 +57,7 @@
 
 #include <malloc.h>
 #include <new>
+
 
 // need this for memset
 #include <string.h>
@@ -159,6 +148,10 @@
 typedef unsigned char uint8;
 typedef signed char int8;
 
+#if defined(__x86_64__) || defined(_WIN64)
+	#define X64BITS
+#endif // __x86_64__
+
 #if defined( _WIN32 )
 
 	typedef __int16					int16;
@@ -198,7 +191,7 @@ typedef signed char int8;
 	typedef unsigned int			uint32;
 	typedef long long				int64;
 	typedef unsigned long long		uint64;
-	#ifdef PLATFORM_64BITS
+	#ifdef X64BITS
 		typedef long long			intp;
 		typedef unsigned long long	uintp;
 	#else
@@ -209,38 +202,16 @@ typedef signed char int8;
 
 	// Avoid redefinition warnings if a previous header defines this.
 	#undef OVERRIDE
-	#if __cplusplus >= 201103L
-		#define OVERRIDE override
 	#if defined(__clang__)
+		#define OVERRIDE override
 		// warning: 'override' keyword is a C++11 extension [-Wc++11-extensions]
 		// Disabling this warning is less intrusive than enabling C++11 extensions
 		#pragma GCC diagnostic ignored "-Wc++11-extensions"
-		#endif
 	#else
 		#define OVERRIDE
 	#endif
 
 #endif // else _WIN32
-
-//-----------------------------------------------------------------------------
-// Set up platform type defines.
-//-----------------------------------------------------------------------------
-#if defined( PLATFORM_X360 ) || defined( _PS3 )
-	#if !defined( _GAMECONSOLE )
-		#define _GAMECONSOLE
-	#endif
-	#define IsPC()			false
-	#define IsGameConsole()	true
-#else
-	#define IsPC()			true
-	#define IsGameConsole()	false
-#endif
-
-#ifdef PLATFORM_64BITS
-	#define IsPlatform64Bits()	true
-#else
-	#define IsPlatform64Bits()	false
-#endif
 
 // From steam/steamtypes.h
 // RTime32
@@ -434,13 +405,6 @@ typedef void * HINSTANCE;
 #define	DebuggerBreakIfDebugging_StagingOnly() if ( !Plat_IsInDebugSession() ) ; else DebuggerBreak()
 #else
 #define	DebuggerBreakIfDebugging_StagingOnly()
-#endif
-
-// Allows you to specify code that should only execute if we are in a staging build. Otherwise the code noops.
-#ifdef STAGING_ONLY
-#define STAGING_ONLY_EXEC( _exec ) do { _exec; } while (0)
-#else
-#define STAGING_ONLY_EXEC( _exec ) do { } while (0)
 #endif
 
 // C functions for external declarations that call the appropriate C++ methods
@@ -1212,9 +1176,6 @@ struct CPUInformation
 	int64 m_Speed;						// In cycles per second.
 
 	tchar* m_szProcessorID;				// Processor vendor Identification.
-
-	uint32 m_nModel;
-	uint32 m_nFeatures[3];
 
 	CPUInformation(): m_Size(0){}
 };

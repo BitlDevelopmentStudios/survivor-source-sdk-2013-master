@@ -26,8 +26,6 @@
 #include "tier0/dbg.h"
 #include "lumpfiles.h"
 #include "vtf/vtf.h"
-#include "lzma/lzma.h"
-#include "tier1/lzmaDecoder.h"
 
 //=============================================================================
 
@@ -47,7 +45,7 @@ BEGIN_BYTESWAP_DATADESC( lump_t )
 	DEFINE_FIELD( fileofs, FIELD_INTEGER ),
 	DEFINE_FIELD( filelen, FIELD_INTEGER ),
 	DEFINE_FIELD( version, FIELD_INTEGER ),
-	DEFINE_FIELD( uncompressedSize, FIELD_INTEGER ),
+	DEFINE_ARRAY( fourCC, FIELD_CHARACTER, 4 ),
 END_BYTESWAP_DATADESC()
 
 BEGIN_BYTESWAP_DATADESC( dflagslump_t )
@@ -817,10 +815,9 @@ void ClearPakFile( IZip *pak )
 // Input  : *relativename - 
 //			*fullpath - 
 //-----------------------------------------------------------------------------
-void AddFileToPak( IZip *pak, const char *relativename, const char *fullpath, IZip::eCompressionType compressionType )
+void AddFileToPak( IZip *pak, const char *relativename, const char *fullpath )
 {
-	DevMsg( "Adding file to pakfile [ %s ]\n", fullpath );
-	pak->AddFileToZip( relativename, fullpath, compressionType );
+	pak->AddFileToZip( relativename, fullpath );
 }
 
 //-----------------------------------------------------------------------------
@@ -829,65 +826,9 @@ void AddFileToPak( IZip *pak, const char *relativename, const char *fullpath, IZ
 //			*data - 
 //			length - 
 //-----------------------------------------------------------------------------
-void AddBufferToPak( IZip *pak, const char *pRelativeName, void *data, int length, bool bTextMode, IZip::eCompressionType compressionType )
+void AddBufferToPak( IZip *pak, const char *pRelativeName, void *data, int length, bool bTextMode )
 {
-	pak->AddBufferToZip( pRelativeName, data, length, bTextMode, compressionType );
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Add entire directory to .bsp PAK lump as named file
-// Input  : *relativename - 
-//			*data - 
-//			length - 
-//-----------------------------------------------------------------------------
-void AddDirToPak( IZip *pak, const char *pDirPath, const char *pPakPrefix )
-{
-	if ( !g_pFullFileSystem->IsDirectory( pDirPath ) )
-	{
-		Warning( "Passed non-directory to AddDirToPak [ %s ]\n", pDirPath );
-		return;
-	}
-
-	DevMsg( "Adding directory to pakfile [ %s ]\n", pDirPath );
-
-	// Enumerate dir
-	char szEnumerateDir[MAX_PATH] = { 0 };
-	V_snprintf( szEnumerateDir, sizeof( szEnumerateDir ), "%s/*.*", pDirPath );
-	V_FixSlashes( szEnumerateDir );
-
-	FileFindHandle_t handle;
-	const char *szFindResult = g_pFullFileSystem->FindFirst( szEnumerateDir, &handle );
-	do
-	{
-		if ( szFindResult[0] != '.' )
-		{
-			char szPakName[MAX_PATH] = { 0 };
-			char szFullPath[MAX_PATH] = { 0 };
-			if ( pPakPrefix )
-			{
-				V_snprintf( szPakName, sizeof( szPakName ), "%s/%s", pPakPrefix, szFindResult );
-			}
-			else
-			{
-				V_strncpy( szPakName, szFindResult, sizeof( szPakName ) );
-			}
-			V_snprintf( szFullPath, sizeof( szFullPath ), "%s/%s", pDirPath, szFindResult );
-			V_FixDoubleSlashes( szFullPath );
-			V_FixDoubleSlashes( szPakName );
-
-			if ( g_pFullFileSystem->FindIsDirectory( handle ) )
-			{
-				// Recurse
-				AddDirToPak( pak, szFullPath, szPakName );
-			}
-			else
-			{
-				// Just add this file
-				AddFileToPak( pak, szPakName, szFullPath );
-			}
-		}
-		szFindResult = g_pFullFileSystem->FindNext( handle );
-	} while ( szFindResult);
+	pak->AddBufferToZip( pRelativeName, data, length, bTextMode );
 }
 
 //-----------------------------------------------------------------------------
@@ -1353,7 +1294,10 @@ static void AddOcclusionLump( )
 	lump->fileofs = g_pFileSystem->Tell( g_hBSPFile );
 	lump->filelen = nLumpLength;
 	lump->version = LUMP_OCCLUSION_VERSION;
-	lump->uncompressedSize = 0;
+	lump->fourCC[0] = ( char )0;
+	lump->fourCC[1] = ( char )0;
+	lump->fourCC[2] = ( char )0;
+	lump->fourCC[3] = ( char )0;
 
 	// Data is swapped in place, so the 'Count' variables aren't safe to use after they're written
 	WriteData( FIELD_INTEGER, &nOccluderCount );
@@ -2544,7 +2488,10 @@ static void AddLumpInternal( int lumpnum, void *data, int len, int version )
 	lump->fileofs = g_pFileSystem->Tell( g_hBSPFile );
 	lump->filelen = len;
 	lump->version = version;
-	lump->uncompressedSize = 0;
+	lump->fourCC[0] = ( char )0;
+	lump->fourCC[1] = ( char )0;
+	lump->fourCC[2] = ( char )0;
+	lump->fourCC[3] = ( char )0;
 
 	SafeWrite( g_hBSPFile, data, len );
 
@@ -3758,6 +3705,19 @@ void BuildClusterTable( void )
 	}
 }
 
+// There's a version of this in host.cpp!!!  Make sure that they match.
+void GetPlatformMapPath( const char *pMapPath, char *pPlatformMapPath, int dxlevel, int maxLength )
+{
+	Q_StripExtension( pMapPath, pPlatformMapPath, maxLength );
+
+//	if( dxlevel <= 60 )
+//	{
+//		Q_strncat( pPlatformMapPath, "_dx60", maxLength, COPY_ALL_CHARACTERS );
+//	}
+
+	Q_strncat( pPlatformMapPath, ".bsp", maxLength, COPY_ALL_CHARACTERS );
+}
+
 // There's a version of this in checksum_engine.cpp!!! Make sure that they match.
 static bool CRC_MapFile(CRC32_t *crcvalue, const char *pszFileName)
 {
@@ -4019,7 +3979,7 @@ void ConvertPakFileContents( const char *pInFilename )
 		if ( !bConverted )
 		{
 			// straight copy
-			AddBufferToPak( newPakFile, relativeName, sourceBuf.Base(), sourceBuf.TellMaxPut(), false, IZip::eCompressionType_None );
+			AddBufferToPak( newPakFile, relativeName, sourceBuf.Base(), sourceBuf.TellMaxPut(), false );
 		}
 		else
 		{
@@ -4027,7 +3987,7 @@ void ConvertPakFileContents( const char *pInFilename )
 			V_StripExtension( relativeName, relativeName, sizeof( relativeName ) );
 			V_strcat( relativeName, ".360", sizeof( relativeName ) );
 			V_strcat( relativeName, pExt, sizeof( relativeName ) );
-			AddBufferToPak( newPakFile, relativeName, targetBuf.Base(), targetBuf.TellMaxPut(), false, IZip::eCompressionType_None );
+			AddBufferToPak( newPakFile, relativeName, targetBuf.Base(), targetBuf.TellMaxPut(), false );
 		}
 
 		if ( V_stristr( relativeName, ".hdr" ) || V_stristr( relativeName, "_hdr" ) )
@@ -4447,28 +4407,21 @@ bool CompressGameLump( dheader_t *pInBSPHeader, dheader_t *pOutBSPHeader, CUtlBu
 	dgamelumpheader_t* pInGameLumpHeader = (dgamelumpheader_t*)(((byte *)pInBSPHeader) + pInBSPHeader->lumps[LUMP_GAME_LUMP].fileofs);
 	dgamelump_t* pInGameLump = (dgamelump_t*)(pInGameLumpHeader + 1);
 
-	if ( IsX360() )
-	{
-		byteSwap.ActivateByteSwapping( true );
-		byteSwap.SwapFieldsToTargetEndian( pInGameLumpHeader );
-		byteSwap.SwapFieldsToTargetEndian( pInGameLump, pInGameLumpHeader->lumpCount );
-	}
+	byteSwap.ActivateByteSwapping( true );
+	byteSwap.SwapFieldsToTargetEndian( pInGameLumpHeader );
+	byteSwap.SwapFieldsToTargetEndian( pInGameLump, pInGameLumpHeader->lumpCount );
 
 	unsigned int newOffset = outputBuffer.TellPut();
-	// Make room for gamelump header and gamelump structs, which we'll write at the end
-	outputBuffer.SeekPut( CUtlBuffer::SEEK_CURRENT, sizeof( dgamelumpheader_t ) );
-	outputBuffer.SeekPut( CUtlBuffer::SEEK_CURRENT, pInGameLumpHeader->lumpCount * sizeof( dgamelump_t ) );
+	outputBuffer.Put( pInGameLumpHeader, sizeof( dgamelumpheader_t ) );
+	outputBuffer.Put( pInGameLump, pInGameLumpHeader->lumpCount * sizeof( dgamelump_t ) );
 
-	// Start with input lumps, and fixup
-	dgamelumpheader_t sOutGameLumpHeader = *pInGameLumpHeader;
-	CUtlBuffer sOutGameLumpBuf;
-	sOutGameLumpBuf.Put( pInGameLump, pInGameLumpHeader->lumpCount * sizeof( dgamelump_t ) );
-	dgamelump_t *sOutGameLump = (dgamelump_t *)sOutGameLumpBuf.Base();
+	dgamelumpheader_t* pOutGameLumpHeader = (dgamelumpheader_t*)((byte *)outputBuffer.Base() + newOffset);
+	dgamelump_t* pOutGameLump = (dgamelump_t*)(pOutGameLumpHeader + 1);
 
 	// add a dummy terminal gamelump
 	// purposely NOT updating the .filelen to reflect the compressed size, but leaving as original size
 	// callers use the next entry offset to determine compressed size
-	sOutGameLumpHeader.lumpCount++;
+	pOutGameLumpHeader->lumpCount++;
 	dgamelump_t dummyLump = { 0 };
 	outputBuffer.Put( &dummyLump, sizeof( dgamelump_t ) );
 
@@ -4477,130 +4430,62 @@ bool CompressGameLump( dheader_t *pInBSPHeader, dheader_t *pOutBSPHeader, CUtlBu
 		CUtlBuffer inputBuffer;
 		CUtlBuffer compressedBuffer;
 
-		sOutGameLump[i].fileofs = AlignBuffer( outputBuffer, 4 );
+		pOutGameLump[i].fileofs = AlignBuffer( outputBuffer, 4 );
 
 		if ( pInGameLump[i].filelen )
 		{
-			if ( pInGameLump[i].flags & GAMELUMPFLAG_COMPRESSED )
-			{
-				byte *pCompressedLump = ((byte *)pInBSPHeader) + pInGameLump[i].fileofs;
-				if ( CLZMA::IsCompressed( pCompressedLump ) )
-				{
-					inputBuffer.EnsureCapacity( CLZMA::GetActualSize( pCompressedLump ) );
-					unsigned int outSize = CLZMA::Uncompress( pCompressedLump, (unsigned char *)inputBuffer.Base() );
-					inputBuffer.SeekPut( CUtlBuffer::SEEK_CURRENT, outSize );
-					if ( outSize != CLZMA::GetActualSize( pCompressedLump ) )
-					{
-						Warning( "Decompressed size differs from header, BSP may be corrupt\n" );
-					}
-				}
-				else
-				{
-					Assert( CLZMA::IsCompressed( pCompressedLump ) );
-					Warning( "Unsupported BSP: Unrecognized compressed game lump\n" );
-				}
+			inputBuffer.SetExternalBuffer( ((byte *)pInBSPHeader) + pInGameLump[i].fileofs, pInGameLump[i].filelen, pInGameLump[i].filelen );
 
-			}
-			else
-			{
-				inputBuffer.SetExternalBuffer( ((byte *)pInBSPHeader) + pInGameLump[i].fileofs,
-				                               pInGameLump[i].filelen, pInGameLump[i].filelen );
-			}
-
-			bool bCompressed = pCompressFunc ? pCompressFunc( inputBuffer, compressedBuffer ) : false;
+			bool bCompressed = pCompressFunc( inputBuffer, compressedBuffer );
 			if ( bCompressed )
 			{
-				sOutGameLump[i].flags |= GAMELUMPFLAG_COMPRESSED;
+				pOutGameLump[i].flags |= GAMELUMPFLAG_COMPRESSED;
 
 				outputBuffer.Put( compressedBuffer.Base(), compressedBuffer.TellPut() );
 				compressedBuffer.Purge();
 			}
 			else
 			{
-				// as is, clear compression flag from input lump
-				sOutGameLump[i].flags &= ~GAMELUMPFLAG_COMPRESSED;
+				// as is
 				outputBuffer.Put( inputBuffer.Base(), inputBuffer.TellPut() );
 			}
 		}
 	}
 
 	// fix the dummy terminal lump
-	int lastLump = sOutGameLumpHeader.lumpCount-1;
-	sOutGameLump[lastLump].fileofs = outputBuffer.TellPut();
+	int lastLump = pOutGameLumpHeader->lumpCount-1;
+	pOutGameLump[lastLump].fileofs = outputBuffer.TellPut();
 
-	if ( IsX360() )
-	{
 	// fix the output for 360, swapping it back
-		byteSwap.SwapFieldsToTargetEndian( sOutGameLump, sOutGameLumpHeader.lumpCount );
-		byteSwap.SwapFieldsToTargetEndian( &sOutGameLumpHeader );
-	}
+	byteSwap.SwapFieldsToTargetEndian( pOutGameLump, pOutGameLumpHeader->lumpCount );
+	byteSwap.SwapFieldsToTargetEndian( pOutGameLumpHeader );
 
 	pOutBSPHeader->lumps[LUMP_GAME_LUMP].fileofs = newOffset;
 	pOutBSPHeader->lumps[LUMP_GAME_LUMP].filelen = outputBuffer.TellPut() - newOffset;
-	// We set GAMELUMPFLAG_COMPRESSED and handle compression at the sub-lump level, this whole lump is not
-	// decompressable as a block.
-	pOutBSPHeader->lumps[LUMP_GAME_LUMP].uncompressedSize = 0;
-
-	// Rewind to start and write lump headers
-	unsigned int endOffset = outputBuffer.TellPut();
-	outputBuffer.SeekPut( CUtlBuffer::SEEK_HEAD, newOffset );
-	outputBuffer.Put( &sOutGameLumpHeader, sizeof( dgamelumpheader_t ) );
-	outputBuffer.Put( sOutGameLumpBuf.Base(), sOutGameLumpBuf.TellPut() );
-	outputBuffer.SeekPut( CUtlBuffer::SEEK_HEAD, endOffset );
 
 	return true;
 }
 
-//-----------------------------------------------------------------------------
-// Compress callback for RepackBSP
-//-----------------------------------------------------------------------------
-bool RepackBSPCallback_LZMA( CUtlBuffer &inputBuffer, CUtlBuffer &outputBuffer )
+bool CompressBSP( CUtlBuffer &inputBuffer, CUtlBuffer &outputBuffer, CompressFunc_t pCompressFunc )
 {
-	if ( !inputBuffer.TellPut() )
-{
-		// nothing to do
-		return false;
-	}
-
-	unsigned int originalSize = inputBuffer.TellPut() - inputBuffer.TellGet();
-	unsigned int compressedSize = 0;
-	unsigned char *pCompressedOutput = LZMA_Compress( (unsigned char *)inputBuffer.Base() + inputBuffer.TellGet(),
-													  originalSize, &compressedSize );
-	if ( pCompressedOutput )
-	{
-		outputBuffer.Put( pCompressedOutput, compressedSize );
-		DevMsg( "Compressed bsp lump %u -> %u bytes\n", originalSize, compressedSize );
-		free( pCompressedOutput );
-		return true;
-	}
-
-	return false;
-}
-
-
-bool RepackBSP( CUtlBuffer &inputBuffer, CUtlBuffer &outputBuffer, CompressFunc_t pCompressFunc, IZip::eCompressionType packfileCompression )
-{
-	dheader_t *pInBSPHeader = (dheader_t *)inputBuffer.Base();
-	// The 360 swaps this header to disk. For some reason.
-	if ( pInBSPHeader->ident != ( IsX360() ? BigLong( IDBSPHEADER ) : IDBSPHEADER ) )
-	{
-		Warning( "RepackBSP given invalid input data\n" );
-		return false;
-	}
-
 	CByteswap	byteSwap;
-	if ( IsX360() )
+
+	dheader_t *pInBSPHeader = (dheader_t *)inputBuffer.Base();
+	if ( pInBSPHeader->ident != BigLong( IDBSPHEADER ) || !pCompressFunc )
 	{
+		// only compress 360 bsp's
+		return false;
+	}
+
 	// bsp is 360, swap the header back
 	byteSwap.ActivateByteSwapping( true );
 	byteSwap.SwapFieldsToTargetEndian( pInBSPHeader );
-	}
 
-	unsigned int headerOffset = outputBuffer.TellPut();
+	// output will be smaller, use input size as upper bound
+	outputBuffer.EnsureCapacity( inputBuffer.TellMaxPut() );
 	outputBuffer.Put( pInBSPHeader, sizeof( dheader_t ) );
 
-	// This buffer grows dynamically, don't keep pointers to it around. Write out header at end.
-	dheader_t sOutBSPHeader = *pInBSPHeader;
+	dheader_t *pOutBSPHeader = (dheader_t *)outputBuffer.Base();
 
 	// must adhere to input lump's offset order and process according to that, NOT lump num
 	// sort by offset order
@@ -4619,13 +4504,12 @@ bool RepackBSP( CUtlBuffer &inputBuffer, CUtlBuffer &outputBuffer, CompressFunc_
 		SortedLump_t *pSortedLump = &sortedLumps[i];
 		int lumpNum = pSortedLump->lumpNum;
 
-		// Should be set below, don't copy over old data
-		sOutBSPHeader.lumps[lumpNum].fileofs = 0;
-		sOutBSPHeader.lumps[lumpNum].filelen = 0;
-		// Only set by compressed lumps
-		sOutBSPHeader.lumps[lumpNum].uncompressedSize = 0;
-
-		if ( pSortedLump->pLump->filelen ) // Otherwise its degenerate
+		if ( !pSortedLump->pLump->filelen )
+		{
+			// degenerate
+			pOutBSPHeader->lumps[lumpNum].fileofs = 0;
+		}
+		else
 		{
 			int alignment = 4;
 			if ( lumpNum == LUMP_PAKFILE )
@@ -4634,114 +4518,49 @@ bool RepackBSP( CUtlBuffer &inputBuffer, CUtlBuffer &outputBuffer, CompressFunc_
 			}
 			unsigned int newOffset = AlignBuffer( outputBuffer, alignment );
 
+			// only set by compressed lumps, hides the uncompressed size
+			*((unsigned int *)pOutBSPHeader->lumps[lumpNum].fourCC) = 0;
+
 			CUtlBuffer inputBuffer;
-			if ( pSortedLump->pLump->uncompressedSize )
-			{
-				byte *pCompressedLump = ((byte *)pInBSPHeader) + pSortedLump->pLump->fileofs;
-				if ( CLZMA::IsCompressed( pCompressedLump ) && pSortedLump->pLump->uncompressedSize == CLZMA::GetActualSize( pCompressedLump ) )
-				{
-					inputBuffer.EnsureCapacity( CLZMA::GetActualSize( pCompressedLump ) );
-					unsigned int outSize = CLZMA::Uncompress( pCompressedLump, (unsigned char *)inputBuffer.Base() );
-					inputBuffer.SeekPut( CUtlBuffer::SEEK_CURRENT, outSize );
-					if ( outSize != pSortedLump->pLump->uncompressedSize )
-					{
-						Warning( "Decompressed size differs from header, BSP may be corrupt\n" );
-					}
-				}
-				else
-				{
-					Assert( CLZMA::IsCompressed( pCompressedLump ) &&
-					        pSortedLump->pLump->uncompressedSize == CLZMA::GetActualSize( pCompressedLump ) );
-					Warning( "Unsupported BSP: Unrecognized compressed lump\n" );
-				}
-			}
-			else
-			{
-				// Just use input
-				inputBuffer.SetExternalBuffer( ((byte *)pInBSPHeader) + pSortedLump->pLump->fileofs,
-				                               pSortedLump->pLump->filelen, pSortedLump->pLump->filelen );
-			}
+			inputBuffer.SetExternalBuffer( ((byte *)pInBSPHeader) + pSortedLump->pLump->fileofs, pSortedLump->pLump->filelen, pSortedLump->pLump->filelen );
 
 			if ( lumpNum == LUMP_GAME_LUMP )
 			{
 				// the game lump has to have each of its components individually compressed
-				CompressGameLump( pInBSPHeader, &sOutBSPHeader, outputBuffer, pCompressFunc );
+				CompressGameLump( pInBSPHeader, pOutBSPHeader, outputBuffer, pCompressFunc );
 			}
 			else if ( lumpNum == LUMP_PAKFILE )
 			{
-				IZip *newPakFile = IZip::CreateZip( NULL );
-				IZip *oldPakFile = IZip::CreateZip( NULL );
-				oldPakFile->ParseFromBuffer( inputBuffer.Base(), inputBuffer.Size() );
-
-				int id = -1;
-				int fileSize;
-				while ( 1 )
-				{
-					char relativeName[MAX_PATH];
-					id = GetNextFilename( oldPakFile, id, relativeName, sizeof( relativeName ), fileSize );
-					if ( id == -1 )
-						break;
-
-					CUtlBuffer sourceBuf;
-					CUtlBuffer targetBuf;
-
-					bool bOK = ReadFileFromPak( oldPakFile, relativeName, false, sourceBuf );
-					if ( !bOK )
-					{
-						Error( "Failed to load '%s' from lump pak for repacking.\n", relativeName );
-						continue;
-					}
-
-					AddBufferToPak( newPakFile, relativeName, sourceBuf.Base(), sourceBuf.TellMaxPut(), false, packfileCompression );
-
-					DevMsg( "Repacking BSP: Created '%s' in lump pak\n", relativeName );
-				}
-
-				// save new pack to buffer
-				newPakFile->SaveToBuffer( outputBuffer );
-				sOutBSPHeader.lumps[lumpNum].fileofs = newOffset;
-				sOutBSPHeader.lumps[lumpNum].filelen = outputBuffer.TellPut() - newOffset;
-				// Note that this *lump* is uncompressed, it just contains a packfile that uses compression, so we're
-				// not setting lumps[lumpNum].uncompressedSize
-
-				IZip::ReleaseZip( oldPakFile );
-				IZip::ReleaseZip( newPakFile );
+				// add as is
+				pOutBSPHeader->lumps[lumpNum].fileofs = newOffset;
+				outputBuffer.Put( inputBuffer.Base(), inputBuffer.TellPut() );
 			}
 			else
 			{
 				CUtlBuffer compressedBuffer;
-				bool bCompressed = pCompressFunc ? pCompressFunc( inputBuffer, compressedBuffer ) : false;
+				bool bCompressed = pCompressFunc( inputBuffer, compressedBuffer );
 				if ( bCompressed )
 				{
-					sOutBSPHeader.lumps[lumpNum].uncompressedSize = inputBuffer.TellPut();
-					sOutBSPHeader.lumps[lumpNum].filelen = compressedBuffer.TellPut();
-					sOutBSPHeader.lumps[lumpNum].fileofs = newOffset;
+					// placing the uncompressed size in the unused fourCC, will decode at runtime
+					*((unsigned int *)pOutBSPHeader->lumps[lumpNum].fourCC) = BigLong( inputBuffer.TellPut() );
+					pOutBSPHeader->lumps[lumpNum].filelen = compressedBuffer.TellPut();
+					pOutBSPHeader->lumps[lumpNum].fileofs = newOffset;
 					outputBuffer.Put( compressedBuffer.Base(), compressedBuffer.TellPut() );
 					compressedBuffer.Purge();
 				}
 				else
 				{
 					// add as is
-					sOutBSPHeader.lumps[lumpNum].fileofs = newOffset;
-					sOutBSPHeader.lumps[lumpNum].filelen = inputBuffer.TellPut();
+					pOutBSPHeader->lumps[lumpNum].fileofs = newOffset;
 					outputBuffer.Put( inputBuffer.Base(), inputBuffer.TellPut() );
 				}
 			}
 		}
 	}
 
-	if ( IsX360() )
-	{
-		// fix the output for 360, swapping it back
-		byteSwap.SetTargetBigEndian( true );
-		byteSwap.SwapFieldsToTargetEndian( &sOutBSPHeader );
-	}
-
-	// Write out header
-	unsigned int endOffset = outputBuffer.TellPut();
-	outputBuffer.SeekPut( CUtlBuffer::SEEK_HEAD, headerOffset );
-	outputBuffer.Put( &sOutBSPHeader, sizeof( sOutBSPHeader ) );
-	outputBuffer.SeekPut( CUtlBuffer::SEEK_HEAD, endOffset );
+	// fix the output for 360, swapping it back
+	byteSwap.SetTargetBigEndian( true );
+	byteSwap.SwapFieldsToTargetEndian( pOutBSPHeader );
 
 	return true;
 }
@@ -4949,7 +4768,7 @@ bool SwapBSPFile( const char *pInFilename, const char *pOutFilename, bool bSwapO
 		}
 
 		CUtlBuffer outputBuffer;
-		if ( !RepackBSP( inputBuffer, outputBuffer, pCompressFunc, IZip::eCompressionType_None ) )
+		if ( !CompressBSP( inputBuffer, outputBuffer, pCompressFunc ) )
 		{
 			Warning( "Error! Failed to compress BSP '%s'!\n", pOutFilename ); 
 			return false;

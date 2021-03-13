@@ -33,9 +33,6 @@ public:
 	// Opens the file for add
 	virtual bool Add( void );
 
-	// Reverts the file
-	virtual bool Revert( void );
-
 	// Is the file in perforce?
 	virtual bool IsFileInPerforce();
 
@@ -158,21 +155,6 @@ protected:
 	CPlainAutoPtr< CP4File > m_spImpl;
 	CUtlString m_sFileType;
 	bool m_bHasDesiredFileType;
-};
-
-
-//
-// CP4AutoRevert - reverts the file upon construction
-//
-class CP4AutoRevertFile
-{
-public:
-	explicit CP4AutoRevertFile( char const *szFilename ) : m_spImpl( g_p4factory->AccessFile( szFilename ) ) { m_spImpl->Revert(); }
-
-	CP4File * File() const { return m_spImpl.Get(); }
-
-protected:
-	CPlainAutoPtr< CP4File > m_spImpl;
 };
 
 

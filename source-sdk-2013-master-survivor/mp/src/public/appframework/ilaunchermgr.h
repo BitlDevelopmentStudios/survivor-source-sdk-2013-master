@@ -16,8 +16,13 @@
 #include "appframework/IAppSystem.h"
 
 #if defined( DX_TO_GL_ABSTRACTION )
-#include "togl/linuxwin/glmgrbasics.h"
-#include "togl/linuxwin/glmdisplay.h"
+	#if defined( LINUX ) || defined( _WIN32 )
+		#include "togl/linuxwin/glmgrbasics.h"
+		#include "togl/linuxwin/glmdisplay.h"
+	#elif defined( OSX )
+		#include "togl/osx/glmgrbasics.h"
+		#include "togl/osx/glmdisplay.h"
+	#endif
 
 class GLMDisplayDB;
 class CShowPixelsParams;

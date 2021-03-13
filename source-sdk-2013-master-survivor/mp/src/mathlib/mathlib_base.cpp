@@ -1461,9 +1461,7 @@ float Bias( float x, float biasAmt )
 	{
 		lastExponent = log( biasAmt ) * -1.4427f; // (-1.4427 = 1 / log(0.5))
 	}
-	float fRet = pow( x, lastExponent );
-	Assert ( !IS_NAN( fRet ) );
-	return fRet;
+	return pow( x, lastExponent );
 }
 
 
@@ -1479,9 +1477,7 @@ float Gain( float x, float biasAmt )
 
 float SmoothCurve( float x )
 {
-	// Actual smooth curve. Visualization:
-	// http://www.wolframalpha.com/input/?i=plot%5B+0.5+*+%281+-+cos%5B2+*+pi+*+x%5D%29+for+x+%3D+%280%2C+1%29+%5D
-	return 0.5f * (1 - cos( 2.0f * M_PI * x ) );
+	return (1 - cos( x * M_PI )) * 0.5f;
 }
 
 
@@ -1860,10 +1856,7 @@ void QuaternionMult( const Quaternion &p, const Quaternion &q, Quaternion &qt )
 
 void QuaternionMatrix( const Quaternion &q, const Vector &pos, matrix3x4_t& matrix )
 {
-	if ( !HushAsserts() )
-	{
-		Assert( pos.IsValid() );
-	}
+	Assert( pos.IsValid() );
 
 	QuaternionMatrix( q, matrix );
 
@@ -1875,10 +1868,7 @@ void QuaternionMatrix( const Quaternion &q, const Vector &pos, matrix3x4_t& matr
 void QuaternionMatrix( const Quaternion &q, matrix3x4_t& matrix )
 {
 	Assert( s_bMathlibInitialized );
-	if ( !HushAsserts() )
-	{
-		Assert( q.IsValid() );
-	}
+	Assert( q.IsValid() );
 
 #ifdef _VPROF_MATHLIB
 	VPROF_BUDGET( "QuaternionMatrix", "Mathlib" );

@@ -219,7 +219,6 @@ $Project "Vrad_dll"
 		$Lib tier2
 		$Lib vmpi
 		$Lib vtf
-		$Lib "$LIBCOMMON/lzma"
 	}
 
 	$File	"notes.txt"

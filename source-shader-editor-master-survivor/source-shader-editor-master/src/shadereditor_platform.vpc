@@ -19,7 +19,7 @@ $Conditional "TARGET_PLATFORM_2006" 0
 $Conditional "TARGET_PLATFORM_PORTAL2" 0
 
 // Specify game root.
-$Macro TARGET_GAME_DIRECTORY "G:\Projects\GitHub\survivor-source-sdk-2013-master\source-sdk-2013-master-survivor\mp\game\survivor" // example: C:\Steam\steamapps\sourcemods\mygame
+$Macro TARGET_GAME_DIRECTORY "G:\Projects\GitHub\survivor-source-sdk-2013-master\source-sdk-2013-master-survivor\mp\src\game\survivor" // example: C:\Steam\steamapps\sourcemods\mygame
 
 
 // Toggled through macro above, do not touch.
