@@ -99,8 +99,7 @@ public:
 	virtual		bool		CAM_IsOrthographic() const;
 	virtual		void		CAM_OrthographicSize( float& w, float& h ) const;
 
-	virtual		float		CAM_CapYaw( float fVal ) const { return fVal; }
-	virtual		float		CAM_CapPitch( float fVal ) const { return fVal; }
+	virtual		float		CAM_CapYaw( float fVal ) { return fVal; }
 	
 #if defined( HL2_CLIENT_DLL )
 	// IK back channel info
@@ -114,7 +113,7 @@ public:
 	virtual	bool		EnableJoystickMode();
 
 // Private Implementation
-protected:
+private:
 	// Implementation specific initialization
 	void		Init_Camera( void );
 	void		Init_Keyboard( void );
@@ -135,8 +134,8 @@ protected:
 	void		GetAccumulatedMouseDeltasAndResetAccumulators( float *mx, float *my );
 	void		GetMouseDelta( float inmousex, float inmousey, float *pOutMouseX, float *pOutMouseY );
 	void		ScaleMouse( float *x, float *y );
-	virtual void ApplyMouse( QAngle& viewangles, CUserCmd *cmd, float mouse_x, float mouse_y );
-	virtual void MouseMove ( CUserCmd *cmd );
+	void		ApplyMouse( QAngle& viewangles, CUserCmd *cmd, float mouse_x, float mouse_y );
+	void		MouseMove ( CUserCmd *cmd );
 
 	// Joystick  movement input helpers
 	void		ControllerMove ( float frametime, CUserCmd *cmd );

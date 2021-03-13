@@ -378,7 +378,7 @@ public:
 		if ( messageCharsPanel )
 		{
 			messageCharsPanel->SetParent( (vgui::Panel *)NULL );
-			messageCharsPanel->MarkForDeletion();
+			delete messageCharsPanel;
 			messageCharsPanel = NULL;
 		}
 	}
