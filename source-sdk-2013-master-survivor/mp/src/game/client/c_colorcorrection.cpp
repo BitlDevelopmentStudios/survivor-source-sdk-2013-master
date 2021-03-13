@@ -136,11 +136,9 @@ void C_ColorCorrection::ClientThink()
 		if ( weight<0.0f ) weight = 0.0f;	
 		if ( weight>1.0f ) weight = 1.0f;	
 	}
-#ifdef SDK2013CE
-	g_pColorCorrectionMgr->SetColorCorrectionWeight(m_CCHandle, (m_flCurWeight * (1.0 - weight)) * 0.675f);
-#else
+	
 	g_pColorCorrectionMgr->SetColorCorrectionWeight( m_CCHandle, m_flCurWeight * ( 1.0 - weight ) );
-#endif
+
 	BaseClass::ClientThink();
 }
 

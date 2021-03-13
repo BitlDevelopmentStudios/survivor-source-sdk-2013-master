@@ -219,7 +219,7 @@ void C_SceneEntity::SetupClientOnlyScene( const char *pszFilename, C_BaseFlex *p
 	{
 		LoadSceneFromFile( szFilename );
 
-		if ( !HushAsserts() )
+		if (!CommandLine()->FindParm("-hushasserts"))
 		{
 			Assert( m_pScene );
 		}
@@ -257,7 +257,7 @@ void C_SceneEntity::SetupClientOnlyScene( const char *pszFilename, C_BaseFlex *p
 
 	if ( m_hOwner.Get() )
 	{
-		if ( !HushAsserts() )
+		if (!CommandLine()->FindParm("-hushasserts"))
 		{
 			Assert( m_pScene );
 		}
@@ -1108,7 +1108,7 @@ void C_SceneEntity::SetCurrentTime( float t, bool forceClientSync )
 //-----------------------------------------------------------------------------
 void C_SceneEntity::PrefetchAnimBlocks( CChoreoScene *pScene )
 {
-	if ( !HushAsserts() )
+	if (!CommandLine()->FindParm("-hushasserts"))
 	{
 		Assert( pScene && m_bMultiplayer );
 	}
