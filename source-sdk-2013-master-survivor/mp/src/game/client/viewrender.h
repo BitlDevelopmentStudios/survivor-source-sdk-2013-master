@@ -419,6 +419,10 @@ public:
 
 	void			FreezeFrame( float flFreezeTime );
 
+	// Drawing primitives
+	bool			ShouldDrawViewModel(bool drawViewmodel);
+	void			DrawViewModels(const CViewSetup& view, bool drawViewmodel);
+
 	void SetWaterOverlayMaterial( IMaterial *pMaterial )
 	{
 		m_UnderWaterOverlayMaterial.Init( pMaterial );
@@ -435,10 +439,6 @@ private:
 
 	bool			DrawOneMonitor( ITexture *pRenderTarget, int cameraNum, C_PointCamera *pCameraEnt, const CViewSetup &cameraView, C_BasePlayer *localPlayer, 
 						int x, int y, int width, int height );
-
-	// Drawing primitives
-	bool			ShouldDrawViewModel( bool drawViewmodel );
-	void			DrawViewModels( const CViewSetup &view, bool drawViewmodel );
 
 	void			PerformScreenSpaceEffects( int x, int y, int w, int h );
 
