@@ -14,7 +14,6 @@
 #include "iviewrender_beams.h"			// flashlight beam
 #include "r_efx.h"
 #include "dlight.h"
-#include "shadereditor\ivshadereditor.h"
 
 // Don't alias here
 #if defined( CHL2MP_Player )
@@ -107,49 +106,6 @@ void C_HL2MP_Player::UpdateIDTarget()
 		if ( pEntity && (pEntity != this) )
 		{
 			m_iIDEntIndex = pEntity->entindex();
-		}
-	}
-}
-
-void C_HL2MP_Player::UpdatePostProc()
-{
-	if (!IsLocalPlayer())
-		return;
-
-	//Sunrays
-
-	ConVar *pSunray = cvar->FindVar("pp_sunrays");
-
-	if (pSunray->GetBool())
-	{
-		if (!shaderEdit->IsPPEEnabled(0))
-		{
-			shaderEdit->SetPPEEnabled(0, true);
-		}
-	}
-	else
-	{
-		if (shaderEdit->IsPPEEnabled(0))
-		{
-			shaderEdit->SetPPEEnabled(0, false);
-		}
-	}
-
-	//SSAO
-	ConVar *pSSAO = cvar->FindVar("pp_ssao");
-
-	if (pSSAO->GetBool())
-	{
-		if (!shaderEdit->IsPPEEnabled(1))
-		{
-			shaderEdit->SetPPEEnabled(1, true);
-		}
-	}
-	else
-	{
-		if (shaderEdit->IsPPEEnabled(1))
-		{
-			shaderEdit->SetPPEEnabled(1, false);
 		}
 	}
 }
@@ -312,7 +268,6 @@ void C_HL2MP_Player::ClientThink( void )
 	}
 
 	UpdateIDTarget();
-	UpdatePostProc();
 }
 
 //-----------------------------------------------------------------------------

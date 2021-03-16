@@ -194,32 +194,12 @@ $Project "Client (HL2MP)"
 			$File	"survivor\survivor_factionclassmenu.h"
 			$File	"survivor\survivor_factionmenu.cpp"
 			$File	"survivor\survivor_factionmenu.h"
-			$File	"survivor\survivor_postproc.cpp"
 			$File	"survivor\survivor_teammenu_ffa.cpp"
 			$File	"survivor\survivor_teammenu_ffa.h"
 			$File	"survivor\InstantActionGameDialog.cpp"
 			$File	"survivor\InstantActionGameDialog.h"
 			$File	"$SRCDIR\game\shared\survivor\survivor_shareddefs.h"
 			$File	"$SRCDIR\game\shared\survivor\survivor_shareddefs.cpp"
-		}
-		
-		$Folder "Shader Editor"
-		{
-			$Folder	"Header Files"
-			{
-				$File	"$SRCDIR\game\client\ShaderEditor\ISEdit_ModelRender.h"
-				$File	"$SRCDIR\game\client\ShaderEditor\IVShaderEditor.h"
-				$File	"$SRCDIR\game\client\ShaderEditor\ShaderEditorSystem.h"
-				$File	"$SRCDIR\game\client\ShaderEditor\SEdit_ModelRender.h"
-				//$File	"$SRCDIR\game\client\ShaderEditor\Grass\CGrassCluster.h"
-			}
- 
-			$Folder	"Implementation Files"
-			{
-				$File	"$SRCDIR\game\client\ShaderEditor\ShaderEditorSystem.cpp"
-				$File	"$SRCDIR\game\client\ShaderEditor\SEdit_ModelRender.cpp"
-				//$File	"$SRCDIR\game\client\ShaderEditor\Grass\CGrassCluster.cpp"
-			}
 		}
 	}
 }

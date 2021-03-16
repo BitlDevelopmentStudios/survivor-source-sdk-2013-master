@@ -77,7 +77,6 @@ public:
 	void	UpdateIDTarget( void );
 	void	PrecacheFootStepSounds( void );
 	const char	*GetPlayerModelSoundPrefix( void );
-	void	UpdatePostProc(void);
 
 	int GetClass() { return m_iClass; }
 	int GetFaction() { return m_iFaction; }
