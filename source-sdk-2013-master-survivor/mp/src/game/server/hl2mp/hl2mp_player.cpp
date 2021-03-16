@@ -21,6 +21,7 @@
 #include "eventqueue.h"
 #include "gamestats.h"
 #include "survivor/survivor_shareddefs.h"
+#include "survivor/bots/bot.h"
 
 #include "engine/IEngineSound.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
@@ -517,6 +518,10 @@ void CHL2MP_Player::Spawn(void)
 	else
 	{ 
 		StartObserverMode(OBS_MODE_ROAMING);
+	}
+
+	if (GetBotController()) {
+		GetBotController()->Spawn();
 	}
 }
 
@@ -1669,6 +1674,10 @@ void CHL2MP_Player::Event_Killed( const CTakeDamageInfo &info )
 
 	RemoveEffects( EF_NODRAW );	// still draw player body
 	StopZooming();
+
+	if (GetBotController()) {
+		GetBotController()->OnDeath(info);
+	}
 }
 
 int CHL2MP_Player::OnTakeDamage( const CTakeDamageInfo &inputInfo )
@@ -1695,6 +1704,10 @@ int CHL2MP_Player::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 		{
 			pInflictor->AddPoints(iScoreToAdd, false);
 		}
+	}
+
+	if (GetBotController()) {
+		GetBotController()->OnTakeDamage(inputInfo);
 	}
 
 	return BaseClass::OnTakeDamage( inputInfo );
@@ -2085,4 +2098,185 @@ bool CHL2MP_Player::CanHearAndReadChatFrom( CBasePlayer *pPlayer )
 		return false;
 
 	return true;
+}
+
+//================================================================================
+//================================================================================
+void CHL2MP_Player::SetBotController(IBot* pBot)
+{
+	if (m_pBotController) {
+		delete m_pBotController;
+		m_pBotController = NULL;
+	}
+
+	m_pBotController = pBot;
+}
+
+//================================================================================
+//================================================================================
+void CHL2MP_Player::SetUpBot()
+{
+	CreateSenses();
+	SetBotController(new CBot(this));
+}
+
+//================================================================================
+//================================================================================
+void CHL2MP_Player::CreateSenses()
+{
+	m_pSenses = new CAI_Senses;
+	m_pSenses->SetOuter(this);
+}
+
+//================================================================================
+//================================================================================
+void CHL2MP_Player::SetDistLook(float flDistLook)
+{
+	if (GetSenses()) {
+		GetSenses()->SetDistLook(flDistLook);
+	}
+}
+
+//================================================================================
+//================================================================================
+int CHL2MP_Player::GetSoundInterests()
+{
+	return SOUND_DANGER | SOUND_COMBAT | SOUND_PLAYER | SOUND_CARCASS | SOUND_MEAT | SOUND_GARBAGE;
+}
+
+//================================================================================
+//================================================================================
+int CHL2MP_Player::GetSoundPriority(CSound* pSound)
+{
+	if (pSound->IsSoundType(SOUND_COMBAT)) {
+		return SOUND_PRIORITY_HIGH;
+	}
+
+	if (pSound->IsSoundType(SOUND_DANGER)) {
+		if (pSound->IsSoundType(SOUND_CONTEXT_FROM_SNIPER | SOUND_CONTEXT_EXPLOSION)) {
+			return SOUND_PRIORITY_HIGHEST;
+		}
+		else if (pSound->IsSoundType(SOUND_CONTEXT_GUNFIRE | SOUND_BULLET_IMPACT)) {
+			return SOUND_PRIORITY_VERY_HIGH;
+		}
+
+		return SOUND_PRIORITY_HIGH;
+	}
+
+	if (pSound->IsSoundType(SOUND_CARCASS | SOUND_MEAT | SOUND_GARBAGE)) {
+		return SOUND_PRIORITY_VERY_LOW;
+	}
+
+	return SOUND_PRIORITY_NORMAL;
+}
+
+//================================================================================
+//================================================================================
+bool CHL2MP_Player::QueryHearSound(CSound* pSound)
+{
+	CBaseEntity* pOwner = pSound->m_hOwner.Get();
+
+	if (pOwner == this)
+		return false;
+
+	if (pSound->IsSoundType(SOUND_PLAYER) && !pOwner) {
+		return false;
+	}
+
+	if (pSound->IsSoundType(SOUND_CONTEXT_ALLIES_ONLY)) {
+		if (Classify() != CLASS_PLAYER_ALLY && Classify() != CLASS_PLAYER_ALLY_VITAL) {
+			return false;
+		}
+	}
+
+	if (pOwner) {
+		// Solo escuchemos sonidos provocados por nuestros aliados si son de combate.
+		if (TheGameRules->PlayerRelationship(this, pOwner) == GR_ALLY) {
+			if (pSound->IsSoundType(SOUND_COMBAT) && !pSound->IsSoundType(SOUND_CONTEXT_GUNFIRE)) {
+				return true;
+			}
+
+			return false;
+		}
+	}
+
+	if (ShouldIgnoreSound(pSound)) {
+		return false;
+	}
+
+	return true;
+}
+
+//================================================================================
+//================================================================================
+bool CHL2MP_Player::QuerySeeEntity(CBaseEntity* pEntity, bool bOnlyHateOrFear)
+{
+	if (bOnlyHateOrFear) {
+		if (HL2MPRules()->PlayerRelationship(this, pEntity) == GR_NOTTEAMMATE)
+			return true;
+
+		Disposition_t disposition = IRelationType(pEntity);
+		return (disposition == D_HT || disposition == D_FR);
+	}
+
+	return true;
+}
+
+//================================================================================
+//================================================================================
+void CHL2MP_Player::OnLooked(int iDistance)
+{
+	if (GetBotController()) {
+		GetBotController()->OnLooked(iDistance);
+	}
+}
+
+//================================================================================
+//================================================================================
+void CHL2MP_Player::OnListened()
+{
+	if (GetBotController()) {
+		GetBotController()->OnListened();
+	}
+}
+
+//================================================================================
+//================================================================================
+CSound* CHL2MP_Player::GetLoudestSoundOfType(int iType)
+{
+	return CSoundEnt::GetLoudestSoundOfType(iType, EarPosition());
+}
+
+//================================================================================
+// Devuelve si podemos ver el origen del sonido
+//================================================================================
+bool CHL2MP_Player::SoundIsVisible(CSound* pSound)
+{
+	return (FVisible(pSound->GetSoundReactOrigin()) && IsInFieldOfView(pSound->GetSoundReactOrigin()));
+}
+
+//================================================================================
+//================================================================================
+CSound* CHL2MP_Player::GetBestSound(int validTypes)
+{
+	CSound* pResult = GetSenses()->GetClosestSound(false, validTypes);
+
+	if (pResult == NULL) {
+		DevMsg("NULL Return from GetBestSound\n");
+	}
+
+	return pResult;
+}
+
+//================================================================================
+//================================================================================
+CSound* CHL2MP_Player::GetBestScent()
+{
+	CSound* pResult = GetSenses()->GetClosestSound(true);
+
+	if (pResult == NULL) {
+		DevMsg("NULL Return from GetBestScent\n");
+	}
+
+	return pResult;
 }

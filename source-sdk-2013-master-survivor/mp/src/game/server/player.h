@@ -18,6 +18,8 @@
 #include "hintsystem.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
 #include "util_shared.h"
+#include "ai_senses.h"
+#include "soundent.h"
 
 #if defined USES_ECON_ITEMS
 #include "game_item_schema.h"
@@ -229,10 +231,12 @@ public:
 
 	virtual CBotCmd GetLastUserCommand();
 
-private:
+public:
 	CBasePlayer *m_pParent; 
 };
 
+class IBot;
+class CSquad;
 
 class CBasePlayer : public CBaseCombatCharacter
 {
@@ -251,7 +255,42 @@ public:
 
 	// IPlayerInfo passthrough (because we can't do multiple inheritance)
 	IPlayerInfo *GetPlayerInfo() { return &m_PlayerInfo; }
-	IBotController *GetBotController() { return &m_PlayerInfo; }
+	
+	virtual IBot* GetBotController() {
+		return NULL;
+	}
+
+	virtual void SetBotController(IBot* pBot) { }
+	virtual void SetUpBot() { }
+
+	virtual CAI_Senses* GetSenses() {
+		return NULL;
+	}
+
+	virtual const CAI_Senses* GetSenses() const {
+		return NULL;
+	}
+
+	virtual CSound* GetBestSound(int validTypes = ALL_SOUNDS) {
+		return NULL;
+	}
+
+	virtual CSound* GetBestScent(void) {
+		return NULL;
+	}
+
+	// Squad
+	virtual CSquad* GetSquad() {
+		return NULL;
+	}
+
+	virtual void SetSquad(CSquad* pSquad) { }
+	virtual void SetSquad(const char* name) { }
+
+	virtual void OnNewLeader(CBasePlayer* pMember) { }
+	virtual void OnMemberTakeDamage(CBasePlayer* pMember, const CTakeDamageInfo& info) { }
+	virtual void OnMemberDeath(CBasePlayer* pMember, const CTakeDamageInfo& info) { }
+	virtual void OnMemberReportEnemy(CBasePlayer* pMember, CBaseEntity* pEnemy) { }
 
 	virtual void			SetModel( const char *szModelName );
 	void					SetBodyPitch( float flPitch );

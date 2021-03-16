@@ -28,7 +28,7 @@
 
 #include "tier0/vprof.h"
 
-#include "survivor/bot/bot_main.h"
+#include "survivor/bots/bot.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -205,10 +205,6 @@ void GameStartFrame( void )
 
 	gpGlobals->teamplay = (teamplay.GetInt() != 0);
 
-#ifdef DEBUG
-	extern void Bot_Puppet_RunAll();
-	Bot_Puppet_RunAll();
-#endif
 	extern void Bot_RunAll();
 	Bot_RunAll();
 }

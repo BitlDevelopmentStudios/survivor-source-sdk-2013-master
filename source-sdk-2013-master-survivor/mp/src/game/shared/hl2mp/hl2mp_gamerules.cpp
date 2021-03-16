@@ -34,11 +34,7 @@
 	#include "hl2mp_gameinterface.h"
 	#include "hl2mp_cvars.h"
 
-#ifdef DEBUG	
-	#include "hl2mp_bot_temp.h"
-#endif
-
-	#include "survivor/bot/bot_main.h"
+	#include "survivor_bot.h"
 
 extern void respawn(CBaseEntity *pEdict, bool fCopyCorpse);
 
@@ -47,6 +43,7 @@ extern bool FindInList( const char **pStrings, const char *pToFind );
 //ConVar sv_hl2mp_weapon_respawn_time( "sv_hl2mp_weapon_respawn_time", "20", FCVAR_GAMEDLL | FCVAR_NOTIFY );
 //ConVar sv_hl2mp_item_respawn_time( "sv_hl2mp_item_respawn_time", "30", FCVAR_GAMEDLL | FCVAR_NOTIFY );
 ConVar sv_report_client_settings("sv_report_client_settings", "0", FCVAR_GAMEDLL | FCVAR_NOTIFY );
+ConVar sv_survivor_bot_fillserver("sv_survivor_bot_fillserver", "0", FCVAR_GAMEDLL | FCVAR_NOTIFY);
 
 extern ConVar mp_chattime;
 
@@ -320,41 +317,18 @@ void CHL2MPRules::PlayerKilled( CBasePlayer *pVictim, const CTakeDamageInfo &inf
 #endif
 }
 
+extern ConVar sv_survivor_bot_fillserver;
+
 void CHL2MPRules::PlayerSpawn(CBasePlayer *pPlayer)
 {
 
 #ifndef CLIENT_DLL
 	BaseClass::PlayerSpawn(pPlayer);
 
-	ConVar *sv_bot_fillserver = cvar->FindVar("sv_bot_fillserver");
-
-	if (sv_bot_fillserver->GetBool() && !pPlayer->IsBot())
+	if (sv_survivor_bot_fillserver.GetBool() && !pPlayer->IsBot())
 	{
 		int imaxClients = gpGlobals->maxClients - 1;
-
-		for (int i = 1; i <= imaxClients; i++)
-		{
-			int iTeam = 0;
-
-			//force this bot to be on teams
-			if (HL2MPRules()->IsTeamplay() == true)
-			{
-				if (random->RandomInt(0, 1) == 0)
-				{
-					iTeam = TEAM_RED;
-				}
-				else
-				{
-					iTeam = TEAM_BLUE;
-				}
-			}
-			else
-			{
-				iTeam = TEAM_UNASSIGNED;
-			}
-
-			BotPutInServer(false, iTeam);
-		}
+		SpawnSurvivorBots(imaxClients);
 	}
 #endif
 }
@@ -987,32 +961,6 @@ CAmmoDef *GetAmmoDef()
 		"Automatically switch to picked up weapons (if more powerful)" );
 
 #else
-
-#ifdef DEBUG
-
-	// Handler for the "bot" command.
-	void Bot_f()
-	{		
-		// Look at -count.
-		int count = 1;
-		count = clamp( count, 1, 16 );
-
-		int iTeam = TEAM_BLUE;
-				
-		// Look at -frozen.
-		bool bFrozen = false;
-			
-		// Ok, spawn all the bots.
-		while ( --count >= 0 )
-		{
-			PuppetBotPutInServer( bFrozen, iTeam );
-		}
-	}
-
-
-	ConCommand cc_Bot( "bot", Bot_f, "Add a bot.", FCVAR_CHEAT );
-
-#endif
 
 	bool CHL2MPRules::FShouldSwitchWeapon( CBasePlayer *pPlayer, CBaseCombatWeapon *pWeapon )
 	{		

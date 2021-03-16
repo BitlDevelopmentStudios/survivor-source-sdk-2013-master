@@ -14,7 +14,7 @@ $Configuration
 {
 	$Compiler
 	{
-		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\hl2,.\hl2,.\hl2mp,$SRCDIR\game\shared\hl2mp.,\survivor,$SRCDIR\game\shared\survivor"
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\hl2,.\hl2,.\hl2mp,$SRCDIR\game\shared\hl2mp,.\survivor,.\survivor\bots,$SRCDIR\game\shared\survivor"
 		$PreprocessorDefinitions		"$BASE;HL2MP;HL2_DLL;SOURCE_2013;SURVIVOR_DLL;SURVIVOR_SERVER_DLL"
 	}
 }
@@ -243,8 +243,6 @@ $Project "Server (HL2MP)"
 
 		$Folder	"HL2MP"
 		{
-			$File	"hl2mp\hl2mp_bot_temp.cpp"
-			$File	"hl2mp\hl2mp_bot_temp.h"
 			$File	"hl2mp\hl2mp_client.cpp"
 			$File	"hl2mp\hl2mp_cvars.cpp"
 			$File	"hl2mp\hl2mp_gameinterface.cpp"
@@ -305,12 +303,96 @@ $Project "Server (HL2MP)"
 				$File	"$SRCDIR\game\shared\survivor\weapon_sniper_rifle.cpp"
 			}
 			
-			$Folder	"Bot"
+			$Folder "Bots"
 			{
-				$File	"survivor\bot\bot_combat.h"
-				$File	"survivor\bot\bot_main.cpp"
-				$File	"survivor\bot\bot_main.h"
-				$File	"survivor\bot\bot_navigation.h"
+				$Folder "Base Code"
+				{
+					$Folder "Components"
+					{
+						$File	"survivor\bots\components\bot_component_attack.cpp"
+						$File	"survivor\bots\components\bot_component_decision.cpp"
+						$File	"survivor\bots\components\bot_component_follow.cpp"
+						$File	"survivor\bots\components\bot_component_locomotion.cpp"
+						$File	"survivor\bots\components\bot_component_memory.cpp"
+						$File	"survivor\bots\components\bot_component_vision.cpp"
+						$File	"survivor\bots\components\bot_components.h"
+					}
+
+					$Folder "Entities"
+					{
+						$File	"survivor\bots\bot_maker.cpp"
+						$File	"survivor\bots\bot_maker.h"
+						$File	"survivor\bots\bot_squad.cpp"
+						$File	"survivor\bots\bot_squad.h"
+					}
+
+					$Folder "Interfaces"
+					{
+						$File	"survivor\bots\interfaces\ibot.h"
+						$File	"survivor\bots\interfaces\ibotattack.h"
+						$File	"survivor\bots\interfaces\ibotcomponent.h"
+						$File	"survivor\bots\interfaces\ibotdecision.h"
+						$File	"survivor\bots\interfaces\ibotfollow.h"
+						$File	"survivor\bots\interfaces\ibotlocomotion.h"
+						$File	"survivor\bots\interfaces\ibotmemory.h"
+						$File	"survivor\bots\interfaces\ibotschedule.h"
+						$File	"survivor\bots\interfaces\ibotvision.h"
+					}
+
+					$Folder "Navigation"
+					{
+						$File	"survivor\bots\interfaces\improv_locomotor.h"
+						$File	"survivor\bots\nav_path.cpp"
+						$File	"survivor\bots\nav_path.h"
+					}
+
+					$Folder "Schedules"
+					{
+						$File	"survivor\bots\schedules\bot_schedule_call_backup.cpp"
+						$File	"survivor\bots\schedules\bot_schedule_change_weapon.cpp"
+						$File	"survivor\bots\schedules\bot_schedule_cover.cpp"
+						$File	"survivor\bots\schedules\bot_schedule_defend_spawn.cpp"
+						$File	"survivor\bots\schedules\bot_schedule_help_dejected_friend.cpp"
+						$File	"survivor\bots\schedules\bot_schedule_hide_and_heal.cpp"
+						$File	"survivor\bots\schedules\bot_schedule_hide_and_reload.cpp"
+						$File	"survivor\bots\schedules\bot_schedule_hunt_enemy.cpp"
+						$File	"survivor\bots\schedules\bot_schedule_investigate_location.cpp"
+						$File	"survivor\bots\schedules\bot_schedule_move_aside.cpp"
+						$File	"survivor\bots\schedules\bot_schedule_reload.cpp"
+						$File	"survivor\bots\schedules\bot_schedules.h"
+						$File	"survivor\bots\schedules\bot_schedule.cpp"
+					}
+
+					$Folder "Squad"
+					{
+						$File	"survivor\bots\squad.cpp"
+						$File	"survivor\bots\squad.h"
+						$File	"survivor\bots\squad_manager.cpp"
+						$File	"survivor\bots\squad_manager.h"
+					}
+
+					$File	"survivor\bots\bot.cpp"
+					$File	"survivor\bots\bot.h"
+					$File	"survivor\bots\bot_ai.cpp"
+					$File	"survivor\bots\bot_debug.cpp"
+					$File	"survivor\bots\bot_defs.h"
+					$File	"survivor\bots\bot_manager.cpp"
+					$File	"survivor\bots\bot_manager.h"
+					$File	"survivor\bots\bot_memory.cpp"
+					$File	"survivor\bots\bot_senses.cpp"
+					$File	"survivor\bots\bot_skill.cpp"
+					$File	"survivor\bots\bot_state.cpp"
+					$File	"survivor\bots\bot_utils.cpp"
+					$File	"survivor\bots\bot_utils.h"
+					$File	"survivor\bots\in_utils.cpp"
+					$File	"survivor\bots\in_utils.h"
+				}
+				
+				$Folder "Mod Code"
+				{
+					$File	"survivor\bots\survivor_bot.cpp"
+					$File	"survivor\bots\survivor_bot.h"
+				}
 			}
 			
 			$File	"survivor\item_dogtag.cpp"

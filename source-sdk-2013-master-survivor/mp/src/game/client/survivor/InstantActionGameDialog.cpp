@@ -169,7 +169,7 @@ void CInstantActionGameDialog::OnCommand(const char *command)
 		char szMapCommand[1024];
 
 		// create the command to execute
-		Q_snprintf(szMapCommand, sizeof(szMapCommand), "disconnect\nmaxplayers %s\nmp_teamplay %s\nmp_timelimit %s\nsurvivor_randomizer %s\nsv_lan 1\nsv_bot_fillserver 1\nprogress_enable\nmap %s\n", szMaxBots, szTeamplay, szTimeLimit, szRandomizer, szMapName);
+		Q_snprintf(szMapCommand, sizeof(szMapCommand), "disconnect\nmaxplayers %s\nmp_teamplay %s\nmp_timelimit %s\nsurvivor_randomizer %s\nsv_lan 1\nsv_survivor_bot_fillserver 1\nprogress_enable\nmap %s\n", szMaxBots, szTeamplay, szTimeLimit, szRandomizer, szMapName);
 
 		// exec
 		engine->ClientCmd_Unrestricted(szMapCommand);
