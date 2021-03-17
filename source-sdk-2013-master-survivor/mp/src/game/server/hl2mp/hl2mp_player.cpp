@@ -21,7 +21,7 @@
 #include "eventqueue.h"
 #include "gamestats.h"
 #include "survivor/survivor_shareddefs.h"
-#include "survivor/bots/bot.h"
+#include "survivor/bots/survivor_bot.h"
 
 #include "engine/IEngineSound.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
@@ -461,11 +461,86 @@ void CHL2MP_Player::SetWeaponPreset(int iSlotNum, int iPresetNum)
 	}
 }
 
+extern ConVar bot_team;
+extern ConVar bot_class;
+extern ConVar bot_faction;
+extern ConVar bot_gender;
+
+void CHL2MP_Player::InitialSpawn(void)
+{
+	BaseClass::InitialSpawn();
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Sets HL2 specific defaults.
 //-----------------------------------------------------------------------------
 void CHL2MP_Player::Spawn(void)
 {
+	if (GetBotController())
+	{
+		if (GetTeamNumber() == TEAM_SPECTATOR)
+		{
+			if (bot_team.GetInt() > 0)
+			{
+				ChangeTeam(bot_team.GetInt());
+			}
+			else
+			{
+				//force this bot to be on teams
+				if (HL2MPRules()->IsTeamplay() == true)
+				{
+					if (random->RandomInt(0, 1) == 0)
+					{
+						ChangeTeam(TEAM_RED);
+					}
+					else
+					{
+						ChangeTeam(TEAM_BLUE);
+					}
+				}
+				else
+				{
+					ChangeTeam(TEAM_UNASSIGNED);
+				}
+			}
+
+			if (bot_class.GetInt() > 0)
+			{
+				SetClass(bot_class.GetInt());
+			}
+			else
+			{
+				int iRandomClass = random->RandomInt(SURVIVOR_CLASS_RANGER, SURVIVOR_CLASS_ENGINEER);
+				SetClass(iRandomClass);
+			}
+
+			if (bot_gender.GetInt() > 0)
+			{
+				SetGender(bot_gender.GetInt());
+			}
+			else
+			{
+				int iRandomGender = random->RandomInt(SURVIVOR_GENDER_MALE, SURVIVOR_GENDER_FEMALE);
+				SetGender(iRandomGender);
+			}
+
+			if (bot_faction.GetInt() > 0)
+			{
+				SetFaction(bot_faction.GetInt());
+			}
+			else
+			{
+				int iRandomFaction = random->RandomInt(SURVIVOR_FACTION_RESISTANCE, SURVIVOR_FACTION_COMBINE);
+				SetFaction(iRandomFaction);
+			}
+
+			// adding this to bots to make it more believeable. -bitl
+			UTIL_ClientPrintAll(HUD_PRINTTALK, "#Player_Changed_FactionClass", GetPlayerName(), GetFactionName(), GetClassName());
+			StopObserverMode();
+			State_Transition(STATE_ACTIVE);
+		}
+	}
+
 	m_flNextTeamChangeTime = 0.0f;
 
 	GetPlayerSpawnSettings();
@@ -2060,13 +2135,13 @@ void CHL2MP_Player::State_PreThink_OBSERVER_MODE()
 {
 	// Make sure nobody has changed any of our state.
 	//	Assert( GetMoveType() == MOVETYPE_FLY );
-	Assert( m_takedamage == DAMAGE_NO );
-	Assert( IsSolidFlagSet( FSOLID_NOT_SOLID ) );
+	//Assert( m_takedamage == DAMAGE_NO );
+	//Assert( IsSolidFlagSet( FSOLID_NOT_SOLID ) );
 	//	Assert( IsEffectActive( EF_NODRAW ) );
 
 	// Must be dead.
-	Assert( m_lifeState == LIFE_DEAD );
-	Assert( pl.deadflag );
+	//Assert( m_lifeState == LIFE_DEAD );
+	//Assert( pl.deadflag );
 }
 
 
@@ -2117,7 +2192,8 @@ void CHL2MP_Player::SetBotController(IBot* pBot)
 void CHL2MP_Player::SetUpBot()
 {
 	CreateSenses();
-	SetBotController(new CBot(this));
+	//SetBotController(new CBot(this));
+	SetBotController(new CSurvivor_Bot(this));
 }
 
 //================================================================================

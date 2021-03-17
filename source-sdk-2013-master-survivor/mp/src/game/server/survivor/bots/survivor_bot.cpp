@@ -253,11 +253,6 @@ const char* GetGenderNameBot(int iGender)
     return chFactionName;
 }
 
-extern ConVar bot_team;
-extern ConVar bot_class;
-extern ConVar bot_faction;
-extern ConVar bot_gender;
-
 CON_COMMAND_F(bot_add, "Adds a specified number of Survivor bots", FCVAR_SERVER)
 {
     SpawnSurvivorBots(Q_atoi(args.Arg(1)));
@@ -276,68 +271,7 @@ void SpawnSurvivorBots(int botCount)
             return;
 
         if (pPlayer) {
-            if (bot_team.GetInt() > 0) 
-            {
-                pPlayer->ChangeTeam(bot_team.GetInt());
-            }
-            else
-            {
-                //force this bot to be on teams
-                if (HL2MPRules()->IsTeamplay() == true)
-                {
-                    if (random->RandomInt(0, 1) == 0)
-                    {
-                        pPlayer->ChangeTeam(TEAM_RED);
-                    }
-                    else
-                    {
-                        pPlayer->ChangeTeam(TEAM_BLUE);
-                    }
-                }
-                else
-                {
-                    pPlayer->ChangeTeam(TEAM_UNASSIGNED);
-                }
-            }
-
-            if (bot_class.GetInt() > 0) 
-            {
-                pPlayer->SetClass(bot_class.GetInt());
-            }
-            else
-            {
-                int iRandomClass = random->RandomInt(SURVIVOR_CLASS_RANGER, SURVIVOR_CLASS_ENGINEER);
-                pPlayer->SetClass(iRandomClass);
-            }
-
-            if (bot_gender.GetInt() > 0)
-            {
-                pPlayer->SetGender(bot_gender.GetInt());
-            }
-            else
-            {
-                int iRandomGender = random->RandomInt(SURVIVOR_GENDER_MALE, SURVIVOR_GENDER_FEMALE);
-                pPlayer->SetGender(iRandomGender);
-            }
-
-            if (bot_faction.GetInt() > 0)
-            {
-                pPlayer->SetFaction(bot_faction.GetInt());
-            }
-            else
-            {
-                int iRandomFaction = random->RandomInt(SURVIVOR_FACTION_RESISTANCE, SURVIVOR_FACTION_COMBINE);
-                pPlayer->SetFaction(iRandomFaction);
-            }
-
-            // adding this to bots to make it more believeable. -bitl
-            UTIL_ClientPrintAll(HUD_PRINTTALK, "#Player_Changed_FactionClass", pPlayer->GetPlayerName(), pPlayer->GetFactionName(), pPlayer->GetClassName());
-
-            pPlayer->Spawn();
-
-            CCommand args;
-            args.Tokenize("joingame");
-            pPlayer->ClientCommand(args);
+            //everything is handled in spawn
         }
     }
 }

@@ -54,6 +54,7 @@ public:
 	DECLARE_DATADESC();
 
 	virtual void Precache( void );
+	virtual void InitialSpawn(void);
 	virtual void Spawn( void );
 	virtual void PostThink( void );
 	virtual void PreThink( void );
