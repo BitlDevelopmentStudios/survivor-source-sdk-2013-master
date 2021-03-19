@@ -59,10 +59,10 @@ CPlayer* CreateSurvivorBot(const char* pPlayername, const Vector* vecPosition, c
 
     if (!pPlayername) {
         const char* pPlayername1 = NewNameSelection();
-        const char* pBotNameFormat = sv_survivor_bot_tag.GetBool() ? "[BOT] %s%s%s" : "%s%s%s";
+        const char* pBotNameFormat = sv_survivor_bot_tag.GetBool() ? "[BOT] %s" : "%s";
         char combinedName[MAX_PLAYER_NAME_LENGTH];
         Q_snprintf(combinedName, sizeof(combinedName), pBotNameFormat, pPlayername1);
-        pPlayername = NewNameSelection();
+        pPlayername = combinedName;
     }
 
     edict_t* pSoul = engine->CreateFakeClient(pPlayername);

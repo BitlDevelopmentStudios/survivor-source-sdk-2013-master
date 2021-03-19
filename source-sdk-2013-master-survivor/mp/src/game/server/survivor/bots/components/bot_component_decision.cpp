@@ -1145,12 +1145,6 @@ BCOND CBotDecision::ShouldRangeAttack2()
     if ( !pWeapon || pWeapon->IsMeleeWeapon() )
         return BCOND_NONE;
 
-    //healgun.
-    if (pWeapon->IsHealgun())
-    {
-        return BCOND_CAN_RANGE_ATTACK2;
-    }
-
     //SLAM!
     if (pWeapon->IsSLAM())
     {

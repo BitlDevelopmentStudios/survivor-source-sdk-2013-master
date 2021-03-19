@@ -1203,9 +1203,12 @@ void CHL2_Player::StartSprinting( void )
 		// debounce the button for sound playing
 		if ( m_afButtonPressed & IN_SPEED )
 		{
-			CPASAttenuationFilter filter( this );
-			filter.UsePredictionRules();
-			EmitSound( filter, entindex(), "HL2Player.SprintNoPower" );
+			if (!IsBot())
+			{
+				CPASAttenuationFilter filter(this);
+				filter.UsePredictionRules();
+				EmitSound(filter, entindex(), "HL2Player.SprintNoPower");
+			}
 		}
 		return;
 	}

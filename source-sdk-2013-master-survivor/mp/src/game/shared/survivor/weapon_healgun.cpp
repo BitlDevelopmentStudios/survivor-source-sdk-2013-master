@@ -9,6 +9,7 @@
 #include "npcevent.h"
 #include "in_buttons.h"
 #include "hl2mp_gamerules.h"
+#include "beam_shared.h"
 
 #ifdef CLIENT_DLL
 	#include "c_hl2mp_player.h"
@@ -22,6 +23,8 @@
 #define CWeaponHealgun C_WeaponHealgun
 #endif
 
+#define GAUSS_BEAM_SPRITE "sprites/lgtning.vmt"
+
 //-----------------------------------------------------------------------------
 // CWeaponHealgun
 //-----------------------------------------------------------------------------
@@ -33,16 +36,23 @@ public:
 
 	CWeaponHealgun( void );
 
+	void	Precache(void);
 	void	PrimaryAttack( void );
 	void	SecondaryAttack( void );
 	void	PrimaryAttackTeamplay(void);
 	void	PrimaryAttackFFA(void);
 	void	ItemPostFrame(void);
-	bool 	HealPlayer( void );
-	bool 	HealSelfPlayer( void );
+	void 	HealPlayer( void );
+	void	DrawBeam(const Vector& startPos, const Vector& endPos);
+	void 	HealSelfPlayer( void );
 	bool	Deploy(void);
 	bool	Reload(void);
 	virtual int	 GetWeaponID(void) const			{ return WEAPON_HEALGUN; }
+	virtual const Vector& GetBulletSpread(void)
+	{
+		static Vector cone = VECTOR_CONE_1DEGREES;
+		return cone;
+	}
 	DECLARE_NETWORKCLASS(); 
 	DECLARE_PREDICTABLE();
 
@@ -51,7 +61,7 @@ public:
 #endif
 
 private:
-
+	CBeam* m_pBeam;
 	CNetworkVar(bool, m_bIsReloading);
 	
 	CWeaponHealgun( const CWeaponHealgun & );
@@ -120,6 +130,17 @@ bool CWeaponHealgun::Deploy(void)
 	pViewModel->m_nSkin = 1;
 
 	return BaseClass::Deploy();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeaponHealgun::Precache(void)
+{
+	// Laser dot...
+	PrecacheModel(GAUSS_BEAM_SPRITE);
+
+	BaseClass::Precache();
 }
 
 //-----------------------------------------------------------------------------
@@ -268,81 +289,104 @@ void CWeaponHealgun::ItemPostFrame(void)
 	BaseClass::ItemPostFrame();
 }
 
-bool CWeaponHealgun::HealPlayer( void )
+void CWeaponHealgun::HealPlayer( void )
 {
    CBasePlayer *pOwner = ToBasePlayer(GetOwner());
  
    if (!pOwner)
+      return;
+ 
+   Vector	startPos = pOwner->Weapon_ShootPosition();
+   Vector	aimDir = pOwner->GetAutoaimVector(AUTOAIM_5DEGREES);
+
+   Vector vecUp, vecRight;
+   VectorVectors(aimDir, vecRight, vecUp);
+
+   float x, y, z;
+
+   //Gassian spread
+   do {
+	   x = random->RandomFloat(-0.5, 0.5) + random->RandomFloat(-0.5, 0.5);
+	   y = random->RandomFloat(-0.5, 0.5) + random->RandomFloat(-0.5, 0.5);
+	   z = x * x + y * y;
+   } while (z > 1);
+
+   aimDir = aimDir + x * GetBulletSpread().x * vecRight + y * GetBulletSpread().y * vecUp;
+
+   Vector	endPos = startPos + (aimDir * MAX_TRACE_LENGTH);
+
+   //Shoot a shot straight out
+   trace_t	tr;
+   UTIL_TraceLine(startPos, endPos, MASK_SHOT, pOwner, COLLISION_GROUP_NONE, &tr);
+
+   CBaseEntity* pEntity = tr.m_pEnt;
+   if (pEntity)
    {
-      return false;
-   }
- 
-   Vector vecSrc, vecAiming;
-   
-   vecSrc = pOwner->EyePosition();
- 
-   QAngle angles = pOwner->GetLocalAngles();
- 
-   AngleVectors( angles, &vecAiming );
- 
-   trace_t tr;
- 
-   Vector   vecEnd = vecSrc + (vecAiming * 42);
-   UTIL_TraceLine( vecSrc, vecEnd, MASK_SOLID, pOwner, COLLISION_GROUP_NONE, &tr );
- 
-   if (tr.fraction < 1.0)
-   {
-      if (tr.m_pEnt)
-      {
-         CBaseEntity *pEntity = tr.m_pEnt;
-         if (pEntity->IsPlayer())
-         {
-            if (pEntity->GetHealth()<pEntity->GetMaxHealth() && pEntity->GetTeamNumber() == pOwner->GetTeamNumber())
-            {
+	   if (pEntity->IsPlayer())
+	   {
+		   if ((pEntity->GetHealth() < pEntity->GetMaxHealth()) && (pEntity->GetTeamNumber() == pOwner->GetTeamNumber()))
+		   {
 #ifndef CLIENT_DLL
-               CBasePlayer *pPlayer = ToBasePlayer(pEntity);
- 
-               CPASAttenuationFilter filter( pPlayer, "HealthVial.Touch" );
-               EmitSound( filter, pPlayer->entindex(), "HealthVial.Touch" );
-               pEntity->TakeHealth( 20, DMG_GENERIC );
+			   pEntity->TakeHealth(20, DMG_GENERIC);
 #endif
-               return true;
-            }
-			else
-			{
-				return false;
-			}
-         }
-      }
-      return false;
+		   }
+	   }
    }
-   else
-   {
-      return false;
-   }
+
+   float hitAngle = -DotProduct(tr.plane.normal, aimDir);
+
+   Vector vReflection;
+
+   vReflection = 2.0 * tr.plane.normal * hitAngle + aimDir;
+
+   startPos = tr.endpos;
+   endPos = startPos + (vReflection * MAX_TRACE_LENGTH);
+
+   //Draw beam to reflection point
+   DrawBeam(tr.startpos, tr.endpos);
+
+#ifndef CLIENT_DLL
+   // Register a muzzleflash for the AI
+   pOwner->SetMuzzleFlashTime(gpGlobals->curtime + 0.5);
+#endif 
 }
 
-bool CWeaponHealgun::HealSelfPlayer( void )
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeaponHealgun::DrawBeam(const Vector& startPos, const Vector& endPos)
+{
+#ifndef CLIENT_DLL
+
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+
+	if (pOwner == NULL)
+		return;
+
+	//Draw the main beam shaft
+	m_pBeam = CBeam::BeamCreate(GAUSS_BEAM_SPRITE, 20.0f);
+	m_pBeam->SetStartPos(startPos);
+	m_pBeam->PointEntInit(endPos, this);
+	m_pBeam->SetEndAttachment(LookupAttachment("muzzle"));
+	m_pBeam->SetColor(94, 116, 196);
+	m_pBeam->SetEndWidth(m_pBeam->GetWidth());
+	m_pBeam->SetBrightness(200);
+	m_pBeam->RelinkBeam();
+	m_pBeam->LiveForTime(0.05f);
+#endif
+}
+
+void CWeaponHealgun::HealSelfPlayer( void )
 {
 	CBasePlayer *pOwner = ToBasePlayer(GetOwner());
  
 	if (!pOwner)
-	{
-		return false;
-	}
+		return;
  
-	if (pOwner->GetHealth()<pOwner->GetMaxHealth())
+	if (pOwner->GetHealth() < pOwner->GetMaxHealth())
 	{
 #ifndef CLIENT_DLL
- 
-		CPASAttenuationFilter filter( pOwner, "HealthVial.Touch" );
-		EmitSound( filter, pOwner->entindex(), "HealthVial.Touch" );
 		pOwner->TakeHealth( 20, DMG_GENERIC );
 #endif
-		return true;
     }
-	else
-	{
-		return false;
-	}
 }

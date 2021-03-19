@@ -168,8 +168,6 @@ void CBot::Update()
 {
     VPROF_BUDGET( "Update", VPROF_BUDGETGROUP_BOTS );
 
-    Msg("runupdate: base class\n");
-
 	if ( STATE_FINISHED ) {
 		CleanState();
 	}

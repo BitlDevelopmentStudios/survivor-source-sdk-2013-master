@@ -577,9 +577,12 @@ void C_HL2MP_Player::StartSprinting( void )
 	{
 		// Don't sprint unless there's a reasonable
 		// amount of suit power.
-		CPASAttenuationFilter filter( this );
-		filter.UsePredictionRules();
-		EmitSound( filter, entindex(), "HL2Player.SprintNoPower" );
+		if (!IsBot())
+		{
+			CPASAttenuationFilter filter(this);
+			filter.UsePredictionRules();
+			EmitSound(filter, entindex(), "HL2Player.SprintNoPower");
+		}
 		return;
 	}
 

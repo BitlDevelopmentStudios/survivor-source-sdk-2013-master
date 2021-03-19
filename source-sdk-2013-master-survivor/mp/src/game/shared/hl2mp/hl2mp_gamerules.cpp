@@ -893,6 +893,12 @@ bool CHL2MPRules::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 		return false;
 	}
 
+	if ((collisionGroup0 == COLLISION_GROUP_PLAYER || collisionGroup0 == COLLISION_GROUP_PLAYER_MOVEMENT) &&
+		(collisionGroup1 == COLLISION_GROUP_PLAYER || collisionGroup1 == COLLISION_GROUP_PLAYER_MOVEMENT))
+	{
+		return false;
+	}
+
 	return BaseClass::ShouldCollide( collisionGroup0, collisionGroup1 ); 
 
 }
