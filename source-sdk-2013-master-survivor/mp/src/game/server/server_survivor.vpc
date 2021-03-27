@@ -305,6 +305,13 @@ $Project "Server (HL2MP)"
 			
 			$Folder "Bots"
 			{
+				$Folder "HL1 Imported"
+				{
+					$File	"survivor\bots\interfaces\improv.h"
+					$File	"survivor\bots\nav_path.cpp"
+					$File	"survivor\bots\nav_path.h"
+				}
+			
 				$Folder "Base Code"
 				{
 					$Folder "Components"
@@ -337,13 +344,6 @@ $Project "Server (HL2MP)"
 						$File	"survivor\bots\interfaces\ibotmemory.h"
 						$File	"survivor\bots\interfaces\ibotschedule.h"
 						$File	"survivor\bots\interfaces\ibotvision.h"
-					}
-
-					$Folder "Navigation"
-					{
-						$File	"survivor\bots\interfaces\improv_locomotor.h"
-						$File	"survivor\bots\nav_path.cpp"
-						$File	"survivor\bots\nav_path.h"
 					}
 
 					$Folder "Schedules"
