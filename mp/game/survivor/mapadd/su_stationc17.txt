@@ -1,0 +1,70 @@
+"MapAdd"
+{
+        "Init"
+        {
+			"item_regenerate"
+            {
+				//Positions
+                "x" "-7039.229492"
+                "y" "-4177.968750"
+                "z" "394.031250"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					"targetname" "Regeneration_1"
+					"StartDisabled"	"0"
+                }
+            }
+			"item_regenerate"
+            {
+				//Positions
+                "x" "-6785.307129"
+                "y" "-2286.031250"
+                "z" "410.031250"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					"targetname" "Regeneration_2"
+					"StartDisabled"	"0"
+                }
+            }
+			"item_regenerate"
+            {
+				//Positions
+                "x" "-3980.031250"
+                "y" "-3066.567627"
+                "z" "42.031250"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					"targetname" "Regeneration_3"
+					"StartDisabled"	"0"
+                }
+            }
+			"item_regenerate"
+            {
+				//Positions
+                "x" "-8149.391602"
+                "y" "-3308.272217"
+                "z" "10.031250"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					"targetname" "Regeneration_4"
+					"StartDisabled"	"0"
+                }
+            }
+        }
+}

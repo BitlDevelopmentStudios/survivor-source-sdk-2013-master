@@ -1,0 +1,20 @@
+"Ver2.0" Patch:
+- Compressed everything into VPK files.
+- Added a download folder.
+- Removed the Shader Editor sue to issues with the mod's post-processing.
+- Fixed the players not being able to blink.
+- Added the nexttoken patch, protecting players from RCE exploits. (https://www.oneupsecurity.com/research/remote-code-execution-in-source-games)
+- Implemented SourceBots (https://github.com/kolessios/sourcebots) as a replacement for the old bot AI.
+- The Healgun now uses a proper beam.
+- Added HL2DM maps. 
+"Final" Release:
+- Added a basic SSAO shader.
+- Fixed a bug with supply lockers not giving items (don't know if all lockers on every map are affected by this, if there is one that isn't, stand in front of it and use the "showposition" command to get the position of it, then send the position printed in the console to me (starts with "Player position XYZ Coords"))
+- Added the Mapadd System from FIREFIGHT RELOADED to fix the above bug.
+- Bots will now chat!
+- Bots now have a randomized ID instead of an acculmilated ID.
+- Bots will now strafe randomly while in combat.
+- Bots will switch to a melee weapon if they are underwater.
+- Added a basic critical hit system.
+Public Alpha:
+- Release

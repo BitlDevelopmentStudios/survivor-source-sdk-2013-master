@@ -1,0 +1,86 @@
+"MapAdd"
+{
+        "Init"
+        {
+			"item_regenerate"
+            {
+				//Positions
+                "x" "3737.861816"
+                "y" "-1681.968750"
+                "z" "-757.968750"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					"targetname" "Regeneration_1"
+					"StartDisabled"	"0"
+                }
+            }
+			"item_regenerate"
+            {
+				//Positions
+                "x" "2472.755615"
+                "y" "531.968750"
+                "z" "-757.968750"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					"targetname" "Regeneration_2"
+					"StartDisabled"	"0"
+                }
+            }
+			"item_regenerate"
+            {
+				//Positions
+                "x" "2410.152100"
+                "y" "-1041.968750"
+                "z" "-757.968750"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					"targetname" "Regeneration_3"
+					"StartDisabled"	"0"
+                }
+            }
+			"item_regenerate"
+            {
+				//Positions
+                "x" "2574.871826"
+                "y" "337.968750"
+                "z" "-565.968750"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					"targetname" "Regeneration_4"
+					"StartDisabled"	"0"
+                }
+            }
+			"item_regenerate"
+            {
+				//Positions
+                "x" "2828.525879"
+                "y" "-529.968750"
+                "z" "-501.968750"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					"targetname" "Regeneration_5"
+					"StartDisabled"	"0"
+                }
+            }
+        }
+}

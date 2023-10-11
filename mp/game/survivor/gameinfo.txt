@@ -1,0 +1,51 @@
+"GameInfo"
+{
+	game	"SURVIVOR VER2.0"
+	title	""
+	title2	""
+	type multiplayer_only
+	nomodels 1
+	nohimodel 1
+	nocrosshair 1
+	gamelogo 1
+	developer	"Bitl Development Studio"
+	developer_url	"https://www.moddb.com/company/bitl-development-studio"
+	manual		""
+	icon		"resource/game"
+	hidden_maps
+	{
+		"test_speakers"		1
+		"test_hardware"		1
+	}
+	supportsvr	0
+
+	FileSystem
+	{
+		SteamAppId				243750
+		
+		SearchPaths
+		{
+			game+mod			|gameinfo_path|custom/*
+			game+mod+mod_write+default_write_path		|gameinfo_path|.
+			gamebin				|gameinfo_path|bin
+			
+			game				|gameinfo_path|survivor_pak.vpk
+
+			game				|gameinfo_path|hl2mp_shared.vpk
+			game				|all_source_engine_paths|hl2mp
+
+			game				|all_source_engine_paths|hl2/hl2_english.vpk
+			game				|all_source_engine_paths|hl2/hl2_pak.vpk
+			game				|all_source_engine_paths|hl2/hl2_textures.vpk
+			game				|all_source_engine_paths|hl2/hl2_sound_vo_english.vpk
+			game				|all_source_engine_paths|hl2/hl2_sound_misc.vpk
+			game				|all_source_engine_paths|hl2/hl2_misc.vpk
+			game				|all_source_engine_paths|hl2
+
+			game+download			|gameinfo_path|download
+
+			platform			|all_source_engine_paths|platform/platform_misc.vpk
+			platform			|all_source_engine_paths|platform
+		}
+	}
+}

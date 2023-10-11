@@ -1,0 +1,102 @@
+"MapAdd"
+{
+        "Init"
+        {
+			"item_regenerate"
+            {
+				//Positions
+                "x" "341.968750"
+                "y" "230.716232"
+                "z" "-437.968750"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					"targetname" "Regeneration_1"
+					"StartDisabled"	"0"
+                }
+            }
+			"item_regenerate"
+            {
+				//Positions
+                "x" "1540.002808"
+                "y" "117.978745"
+                "z" "-493.968750"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					"targetname" "Regeneration_2"
+					"StartDisabled"	"0"
+                }
+            }
+			"item_regenerate"
+            {
+				//Positions
+                "x" "2261.968750"
+                "y" "655.304321"
+                "z" "-437.968750"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					"targetname" "Regeneration_3"
+					"StartDisabled"	"0"
+                }
+            }
+			"item_regenerate"
+            {
+				//Positions
+                "x" "1733.479004"
+                "y" "-453.968750"
+                "z" "74.031250"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					"targetname" "Regeneration_4"
+					"StartDisabled"	"0"
+                }
+            }
+			"item_regenerate"
+            {
+				//Positions
+                "x" "1298.031250"
+                "y" "-359.117432"
+                "z" "-117.968750"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					"targetname" "Regeneration_5"
+					"StartDisabled"	"0"
+                }
+            }
+			"item_regenerate"
+            {
+				//Positions
+                "x" "744.032715"
+                "y" "-762.031250"
+                "z" "-501.968750"
+				//Rotations
+                "roll"  "0"  
+                "yaw"   "0"
+                "pitch" "0"
+                "KeyValues"
+                {
+					"targetname" "Regeneration_6"
+					"StartDisabled"	"0"
+                }
+            }
+        }
+}

@@ -1,0 +1,83 @@
+// stunstick
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"	"#HL2_StunBaton"
+	"viewmodel"				"models/weapons/v_ac_stunstick.mdl"
+	"viewmodel_red"			"models/weapons/r_ac_stunstick.mdl"
+	"viewmodel_blue"		"models/weapons/b_ac_stunstick.mdl"
+	"playermodel"			"models/weapons/w_ac_stunstick.mdl"
+	"anim_prefix"			"stunbaton"
+	"bucket"				"0"
+	"bucket_position"		"1"
+
+	"clip_size"				"-1"
+	"primary_ammo"			"None"
+	"secondary_ammo"		"None"
+	
+	"BotWeaponRange"	"1"
+
+	"weight"				"3"
+	"item_flags"			"0"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+
+		"single_shot"		"Weapon_StunStick.Swing"
+		"melee_miss"		"Weapon_StunStick.Melee_Miss"
+		"melee_hit"			"Weapon_StunStick.Melee_Hit"
+		"melee_hit_world"	"Weapon_StunStick.Melee_HitWorld"
+	}
+
+	// Weapon Sprite data is loaded by the Client DLL.
+	TextureData
+	{
+		"weapon"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_02"
+				"x"			"0"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+		"weapon_s"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_02"
+				"x"			"0"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+		"ammo"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_02"
+				"x"			"0"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+		"ammo2"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"48"
+				"y"			"72"
+				"width"		"24"
+				"height"	"24"
+		}
+		"crosshair"
+		{
+				"font"		"Crosshairs"
+				"character"	"Q"
+		}
+		"autoaim"
+		{
+				"file"		"sprites/crosshairs"
+				"x"			"48"
+				"y"			"72"
+				"width"		"24"
+				"height"	"24"
+		}
+	}
+}

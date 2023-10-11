@@ -1,0 +1,13 @@
+"ServerBrowserGameTypes.txt"
+{
+	"gametype_1"
+	{
+		"prefix"	"dm_"
+		"name"		"deathmatch"
+	}
+	"gametype_2"
+	{
+		"prefix"	"su_"
+		"name"		"survivor"
+	}
+}

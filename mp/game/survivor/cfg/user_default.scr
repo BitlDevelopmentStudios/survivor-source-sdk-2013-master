@@ -1,0 +1,99 @@
+// User options script
+//
+// Format:
+//  Version [float]
+//  Options description followed by 
+//  Options defaults
+//
+// Option description syntax:
+//
+//  "cvar" { "Prompt" { type [ type info ] } { default } }
+//
+//  type = 
+//   BOOL   (a yes/no toggle)
+//   STRING
+//   NUMBER
+//   LIST
+//
+// type info:
+// BOOL                 no type info
+// NUMBER       min max range, use -1 -1 for no limits
+// STRING       no type info
+// LIST          delimited list of options value pairs
+//
+//
+// default depends on type
+// BOOL is "0" or "1"
+// NUMBER is "value"
+// STRING is "value"
+// LIST is "index", where index "0" is the first element of the list
+//
+// Cvar	-	Setting
+
+VERSION 1.0
+
+DESCRIPTION INFO_OPTIONS
+{
+	"category1"
+	{
+		"#SURVIVOR_Category_PlayerOptions"
+		{ CATEGORY }
+	}
+	
+	"viewmodel_fov"
+	{
+		"#GameUI_ViewmodelFOV"
+		{ SLIDER 54 70 }
+		{ "54" }
+	}
+	
+	"fov_desired"
+	{
+		"#GameUI_FOV"
+		{ SLIDER 75 120 }
+		{ "75" }
+	}
+	
+	"cl_preferredgender"
+	{
+		"#SURVIVOR_PreferredGender"
+		{ 
+			LIST
+			"#SURVIVOR_Gender_Male" "0"
+			"#SURVIVOR_Gender_Female" "1"
+		}
+		{ "0" }
+	}
+	
+	"cl_flipviewmodels"
+	{
+		"#SURVIVOR_FlipViewmodel"
+		{ BOOL }
+		{ "0" }
+	}
+	
+	"category2"
+	{
+		"#SURVIVOR_Category_Graphics"
+		{ CATEGORY }
+	}
+	
+	"muzzleflash_light"
+	{
+		"#SURVIVOR_MuzzleflashLight"
+		{ BOOL }
+		{ "1" }
+	}
+	
+	"muzzleflash_light_type"
+	{
+		"#SURVIVOR_MuzzleflashLightType"
+		{ 
+			LIST
+			"#SURVIVOR_MuzzleflashLightType_1" "0"
+			"#SURVIVOR_MuzzleflashLightType_2" "1"
+		}
+		{ "1" }
+	}
+}
+

@@ -1,21 +1,47 @@
-Bitl's SURVIVOR Mod
+SURVIVOR
 ====================
 
-SURVIVOR was a mod for Half-Life 2 that takes Half-Life 2 Survivor Ver2.0 and recreates it from scratch inside of the Source SDK 2013 engine.
-It was first a remake of the Battle Mode, but then it was planned to also include a Mission Mode as well.
-It also was supposed to be a graphical improvement over the original Half-Life 2 Survivor Ver2.0, with enhancements like SSAO and Sunrays.
-This is the most recent source code branch as of 12-24-16. This includes the Shader Editor and SDK 2013 branches used for SURVIVOR.
+A remake of HL2 SURVIVOR Ver2.0. This is the v2.0 source code.
+Upon request, this now includes Linux build scripts, so this now includes the same scripts used to compile FIREFIGHT RELOADED on Linux, although I haven't tested it.
+Compile instructions are below.
 
-It was hard for me to do this, but I felt like releasing it because I lost interest in the project and I was focusing on FIREFIGHT RELOADED, SMOD3, and others.
-I hope modders can make use of this source code for future modiications to come.
+## Compiling
 
-Thanks, and happy holidays to you all,
+### WINDOWS:
 
-Bitl.
+To be able to build SURVIVOR you will need to download:
+* Visual Studio 2013 or later
+* C++ Build Tools for Visual Studio 2013 (Not required if you already have Visual Studio 2013)
+* Multibyte MFC Library for Visual Studio 2013
+
+Read this for more details: https://developer.valvesoftware.com/wiki/Source_SDK_2013#Source_SDK_2013_on_Windows
+
+You must also run this command in your CMD with administrator privileges in order to get VPC to build a project:
+* REG ADD "HKLM\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\10.0\Projects\{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}" /v DefaultProjectExtension /t REG_SZ /d vcproj /f
+
+Note that the Microsoft Speech API is only required for certain SDK tools.
+
+Creating a solution is as simple as running mp/src/creategameprojects.bat, then opening up the solution in Visual Studio.
+
+### LINUX:
+Read this first to install the steam runtime and other necessary components.\
+https://developer.valvesoftware.com/wiki/Source_SDK_2013#Source_SDK_2013_on_Linux \
+After installing it and other dependencies, do the 3 steps below.
+
+1. CD to your SURVIVOR git directory, I.E.\
+```cd ~/projects/survivor-source-sdk-2013-master```
+
+1. Run the steam-runtime. NOTE: Make sure you have the steam runtime installed in /valve.\
+```bash ./sandbox_setup.sh```
+
+3. Go back to this directory and run:\
+```bash ./build_survivor_linux.sh```\
+This will update the repo automatically. If you would like to update the repo without building it, run:\
+```bash ./update_survivor_linux.sh```
 
 Credits:
 ------------
-R_Yell/Fistful of Frags team - Basic bot AI code.
+Kolessios for the SourceBots source code used as the basis for the bots. (https://github.com/kolessios/sourcebots)
 RaraCerbFolf - Creating the 2-handed AR2 model and modifyng it to work with SURVIVOR, along with some viewmodel fixes.
 Biohazard_90 - Creator of the Source Shader Editor along with the Sunrays shader.
 sparrowstar - Depth of Field shader, as well as helping me implement the shaders.

@@ -1,0 +1,65 @@
+"AnnouncerACv1.KillEnemy"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"#vo\announcer\v1\acv1_defeatenemy.wav"
+}
+
+"AnnouncerACv2.KillEnemy"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"#vo\announcer\v2\acv2_defeatenemy.wav"
+}
+
+"AnnouncerACv1.HealthLow"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"#vo\announcer\v1\acv1_cautionofhealth.wav"
+}
+
+"AnnouncerACv2.HealthLow"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"#vo\announcer\v2\acv2_cautionofhealth.wav"
+}
+
+"AnnouncerACv1.Respawn"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"#vo\announcer\v1\acv1_restart.wav"
+}
+
+"AnnouncerACv2.Respawn"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"#vo\announcer\v2\acv2_restart.wav"
+}

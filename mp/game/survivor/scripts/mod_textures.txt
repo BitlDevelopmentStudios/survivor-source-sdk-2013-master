@@ -1,0 +1,312 @@
+"sprites/640_hud"
+{
+	TextureData
+	{
+		"d_crowbar"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"0"
+				"width"		"48"
+				"height"	"16"
+		}
+		"d_9mmhandgun"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"16"
+				"width"		"32"
+				"height"	"16"
+		}
+		"d_357"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"32"
+				"width"		"32"
+				"height"	"16"
+		}
+		"d_9mmAR"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"48"
+				"width"		"48"
+				"height"	"16"
+		}
+		"d_shotgun"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"64"
+				"width"		"48"
+				"height"	"16"
+		}
+		"d_bolt"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"80"
+				"width"		"48"
+				"height"	"16"
+		}
+		"d_crossbow"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"80"
+				"width"		"48"
+				"height"	"16"
+		}
+		"d_rpg_rocket"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"96"
+				"width"		"48"
+				"height"	"16"
+		}
+		"d_gauss"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"112"
+				"width"		"32"
+				"height"	"16"
+		}
+		"d_egon"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"128"
+				"width"		"32"
+				"height"	"16"
+		}
+		"d_hornet"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"144"
+				"width"		"48"
+				"height"	"16"
+		}
+		"d_grenade"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"160"
+				"width"		"32"
+				"height"	"16"
+		}
+		"d_satchel"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"176"
+				"width"		"32"
+				"height"	"16"
+		}
+		"d_tripmine"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"192"
+				"width"		"32"
+				"height"	"16"
+		}
+		"d_snark"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"208"
+				"width"		"32"
+				"height"	"16"
+		}
+		"d_skull"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"224"
+				"width"		"32"
+				"height"	"16"
+		}
+		"d_tracktrain"
+		{
+				"file"		"sprites/640hud1"
+				"x"			"192"
+				"y"			"240"
+				"width"		"32"
+				"height"	"16"
+		}	
+		"death_357"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_04"
+				"x"			"0"
+				"y"			"18"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_ar2"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_06"
+				"x"			"0"
+				"y"			"18"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_crossbow_bolt"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_10"
+				"x"			"0"
+				"y"			"18"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_smg1"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_05"
+				"x"			"0"
+				"y"			"18"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_shotgun"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_07"
+				"x"			"0"
+				"y"			"18"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_rpg_missile"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_12"
+				"x"			"0"
+				"y"			"22"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_grenade_frag"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_13"
+				"x"			"0"
+				"y"			"15"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_pistol"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_08"
+				"x"			"0"
+				"y"			"18"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_physics"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_17"
+				"x"			"0"
+				"y"			"18"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_combine_ball"
+		{
+				"font"		"HL2MPTypeDeath"
+				"character"	"8"
+		}
+		"death_smg1_grenade"
+		{
+				"font"		"HL2MPTypeDeath"
+				"character"	"7"
+		}
+		"death_stunstick"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_02"
+				"x"			"0"
+				"y"			"18"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_slam"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_15"
+				"x"			"0"
+				"y"			"18"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_crowbar"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_01"
+				"x"			"0"
+				"y"			"18"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_shotgundouble"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_44"
+				"x"			"0"
+				"y"			"22"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_dualrpg_missile"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_50"
+				"x"			"0"
+				"y"			"16"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_dualpistol"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_45"
+				"x"			"0"
+				"y"			"12"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_gatling"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_26"
+				"x"			"0"
+				"y"			"21"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_sniper_rifle"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_11"
+				"x"			"0"
+				"y"			"18"
+				"width"		"64"
+				"height"	"64"
+		}
+		"death_healgun"
+		{
+				"file"		"VGUI/basic2d_linear/ex_weaponicon_25"
+				"x"			"0"
+				"y"			"20"
+				"width"		"64"
+				"height"	"64"
+		}
+		"voice_player"
+		{
+				"file"		"voice/icntlk_sv"
+				"x"		"0"
+				"y"		"0"
+				"width"		"32"
+				"height"	"32"
+		}
+		"voice_self"
+		{
+				"file"		"voice/icntlk_local"
+				"x"		"0"
+				"y"		"0"
+				"width"		"32"
+				"height"	"32"
+		}
+	}	
+}

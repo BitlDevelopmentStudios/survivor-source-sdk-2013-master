@@ -1,0 +1,8 @@
+"InstantActionConfig"
+{
+	"map"		"su_steamlab"
+	"MaxBots"		"16"
+	"Teamplay"		"1"
+	"timelimit"		"5"
+	"Randomizer"		"0"
+}
